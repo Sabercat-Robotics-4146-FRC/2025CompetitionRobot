@@ -185,6 +185,11 @@ public final class Constants {
     public static final PIDConstants pidSim = new PIDConstants(1.0, 0.0, 0.0);
   }
 
+  public static final class IndexerConstants {
+    public static final MotorIdleMode kIndexerIdleMode = MotorIdleMode.COAST;
+    public static final double kIndexerGearRatio = 0;
+  }
+
   /** Accelerometer Constants ********************************************** */
   public static class AccelerometerConstants {
 
@@ -361,6 +366,8 @@ public final class Constants {
     public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, "", 8);
     public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, "", 9);
 
+    public static final RobotDeviceId INDEXER_MOTOR = new RobotDeviceId(23, 1);
+
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined
     // Example:
@@ -371,6 +378,7 @@ public final class Constants {
     // are defined
     // Example:
     // public static final int INTAKE_SERVO = 0;
+    public static final int INDEXER_SERVO = 0;
   }
 
   /** AprilTag Field Layout ************************************************ */
