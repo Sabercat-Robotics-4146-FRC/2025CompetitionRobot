@@ -19,11 +19,14 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.util.PhoenixUtil;
+import frc.robot.Constants.CANandPowerPorts;
+import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
   // -- BE SURE TO SET REDUCTION UPON PHYSICAL ROBOT COMPLETION!!! -- //
-  public static final double reduction = 4.0;
+  public static final double reduction = ElevatorConstants.kElevatorGearRatio;
 
   private final TalonFX leader;
   private final TalonFX follower;
@@ -53,8 +56,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final VoltageOut voltageRequest = new VoltageOut(0.0).withUpdateFreqHz(0.0);
 
   public ElevatorIOTalonFX() {
-    leader = new TalonFX(20, "");
-    follower = new TalonFX(21, "");
+    leader = new TalonFX(CANandPowerPorts.ELEVATOR_LEADER.getDeviceNumber(), CANandPowerPorts.ELEVATOR_LEADER.getBus());
+    follower = new TalonFX(CANandPowerPorts.ELEVATOR_FOLLOWER.getDeviceNumber(), CANandPowerPorts.ELEVATOR_FOLLOWER.getBus());
     follower.setControl(new Follower(leader.getDeviceID(), true));
 
     // -- All Sorts of Configuration -- //
