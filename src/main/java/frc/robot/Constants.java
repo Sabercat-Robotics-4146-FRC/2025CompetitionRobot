@@ -109,7 +109,7 @@ public final class Constants {
   /** Physical Constants for Robot Operation ******************************* */
   public static final class PhysicalConstants {
 
-    public static final double kRobotMassKg = Units.lbsToKilograms(104.2);
+    public static final double kRobotMassKg = Units.lbsToKilograms(134.2);
     public static final Matter kChassis =
         new Matter(new Translation3d(0, 0, Units.inchesToMeters(2)), kRobotMassKg);
     // Robot moment of intertial; this can be obtained from a CAD model of your drivetrain. Usually,
@@ -135,7 +135,7 @@ public final class Constants {
     // Theoretical free speed (m/s) at 12v applied output;
     // IMPORTANT: Follow the AdvantageKit instructions for measuring the ACTUAL maximum linear speed
     // of YOUR ROBOT, and replace the estimate here with your measured value!
-    public static final double kMaxLinearSpeed = Units.feetToMeters(18);
+    public static final double kMaxLinearSpeed = Units.feetToMeters(30);
 
     // Set 3/4 of a rotation per second as the max angular velocity (radians/sec)
     public static final double kMaxAngularSpeed = 1.5 * Math.PI;
