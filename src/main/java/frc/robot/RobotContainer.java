@@ -272,12 +272,16 @@ public class RobotContainer {
     driverController.x().whileTrue(new IntakeCommand(m_indexer));
     driverController.x().whileFalse(new StopIndexerCommand(m_indexer));
     driverController.leftBumper().whileTrue(new LinearActuatorExtendCommand(m_indexer));
-    driverController.leftBumper().whileFalse(new StopLinearActuatorCommand(m_indexer));
+    
+    //driverController.leftBumper().whileFalse(new StopLinearActuatorCommand(m_indexer));
+    
     driverController.rightBumper().whileTrue(new LinearActuatorRetractCommand(m_indexer));
-    driverController.rightBumper().whileFalse(new StopLinearActuatorCommand(m_indexer));
-
+    
+    //driverController.rightBumper().whileFalse(new StopLinearActuatorCommand(m_indexer));
+     
+    // runs indexer backword
     // driverController.leftTrigger().whileTrue(new RunIndexerBackwordCommand(m_indexer));
-    // driverController.leftBumper().whileFalse(new StopIndexerCommand(m_indexer));
+
 
     // Press RIGHT BUMPER --> Run the example flywheel
     /*
