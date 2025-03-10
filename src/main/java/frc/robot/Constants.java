@@ -162,6 +162,7 @@ public final class Constants {
   }
 
   /** Example Flywheel Mechanism Constants ********************************* */
+  /*
   public static final class FlywheelConstants {
 
     // Mechanism idle mode
@@ -184,10 +185,25 @@ public final class Constants {
     // Feedback (PID) constants
     public static final PIDConstants pidSim = new PIDConstants(1.0, 0.0, 0.0);
   }
+    */
 
   public static final class IndexerConstants {
+
     public static final MotorIdleMode kIndexerIdleMode = MotorIdleMode.COAST;
     public static final double kIndexerGearRatio = 0;
+
+    // indexer speed in voltage (run forward)
+    public static final double indexerVoltageOne = 1.2;
+
+    // emergency indexer speed in voltage (run backword)
+    public static final double indexerVoltageTwo = -1.2;
+
+    // linear actuator speeds (between -1.0 and 1.0)
+    public static final double linearActuatorExtend = 1;
+    public static final double linearActuatorRetract = -1;
+
+    // delay time in seconds to stop voltage of indexer
+    public static final double delayInSeconds = 0.5;
   }
 
   /** Accelerometer Constants ********************************************** */
@@ -301,15 +317,18 @@ public final class Constants {
   /** Vision Camera Posses ************************************************* */
   public static class Cameras {
     // Camera names, must match names configured on coprocessor
-    public static String camera0Name = "camera_0";
-    public static String camera1Name = "camera_1";
+    public static String camera1Name = "cam_1";
+    public static String camera2Name = "cam_2";
+    public static String camera3Name = "cam_3";
+    public static String camera4Name = "cam_4";
+
     // ... And more, if needed
 
     // Robot to camera transforms
     // (ONLY USED FOR PHOTONVISION -- Limelight: configure in web UI instead)
-    public static Transform3d robotToCamera0 =
-        new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
     public static Transform3d robotToCamera1 =
+        new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
+    public static Transform3d robotToCamera2 =
         new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
 
     // Standard deviation multipliers for each camera
@@ -363,22 +382,22 @@ public final class Constants {
     /* SUBSYSTEM CAN DEVICE IDS */
     // This is where mechanism subsystem devices are defined (Including ID, bus, and power port)
     // Example:
-    public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, "", 8);
-    public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, "", 9);
+    // public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, "", 8);
+    // public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, "", 9);
 
-    public static final RobotDeviceId INDEXER_MOTOR = new RobotDeviceId(23, 1);
+    public static final RobotDeviceId INDEXER_MOTOR = new RobotDeviceId(16, "", 17);
 
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined
     // Example:
     // public static final int ELEVATOR_BOTTOM_LIMIT = 3;
-
+    public static final int IR_SENSOR = 0;
     /* LINEAR SERVO PWM CHANNELS */
     // This is where PWM-controlled devices (actuators, servos, pneumatics, etc.)
     // are defined
     // Example:
     // public static final int INTAKE_SERVO = 0;
-    public static final int INDEXER_SERVO = 0;
+    public static final int LINEAR_ACTUATOR = 1;
   }
 
   /** AprilTag Field Layout ************************************************ */

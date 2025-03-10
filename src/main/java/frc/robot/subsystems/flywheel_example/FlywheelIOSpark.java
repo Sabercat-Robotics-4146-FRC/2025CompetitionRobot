@@ -14,31 +14,13 @@
 // GNU General Public License for more details.
 
 package frc.robot.subsystems.flywheel_example;
+/*
 
-import static frc.robot.Constants.FlywheelConstants.*;
-import static frc.robot.util.SparkUtil.*;
-
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkFlexConfig;
-import edu.wpi.first.math.util.Units;
-import frc.robot.Constants.CANandPowerPorts;
-import frc.robot.subsystems.drive.SwerveConstants;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
  * "CANSparkFlex".
- */
+
 public class FlywheelIOSpark implements FlywheelIO {
 
   // Define the leader / follower motors from the Ports section of RobotContainer
@@ -126,7 +108,7 @@ public class FlywheelIOSpark implements FlywheelIO {
    * <p>TODO: This functionality is no longer supported by the REVLib SparkClosedLoopController
    * class. In order to keep control of the flywheel's underlying funtionality, shift everything to
    * SmartMotion control.
-   */
+
   @Override
   public void configurePID(double kP, double kI, double kD) {
     // pid.setP(kP, 0);
@@ -135,3 +117,4 @@ public class FlywheelIOSpark implements FlywheelIO {
     // pid.setFF(0, 0);
   }
 }
+*/
