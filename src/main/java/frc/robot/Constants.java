@@ -188,7 +188,6 @@ public final class Constants {
   public static final class ElevatorConstants {
 
     public static final double kElevatorGearRatio = 0;
-
   }
 
   /** Accelerometer Constants ********************************************** */
@@ -367,8 +366,8 @@ public final class Constants {
     public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, "", 8);
     public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, "", 9);
 
-    public static final RobotDeviceId ELEVATOR_LEADER = new RobotDeviceId(30, 16);
-    public static final RobotDeviceId ELEVATOR_FOLLOWER = new RobotDeviceId(31, 17);
+    public static final RobotDeviceId ELEVATOR_LEADER = new RobotDeviceId(14, "Default Name", 16);
+    public static final RobotDeviceId ELEVATOR_FOLLOWER = new RobotDeviceId(15, "Default Name", 17);
 
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined
