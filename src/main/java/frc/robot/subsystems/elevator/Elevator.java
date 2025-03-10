@@ -50,7 +50,7 @@ public class Elevator extends RBSISubsystem {
     L4
   }
 
-  @AutoLogOutput private ElevatorPosition elevatorPosition = ElevatorPosition.STOWED;
+  @AutoLogOutput private ElevatorPosition elevatorDesiredPosition = ElevatorPosition.STOWED;
 
   public Elevator(ElevatorIO io) {
     this.io = io;
@@ -77,7 +77,7 @@ public class Elevator extends RBSISubsystem {
     // -- Zero Position Upon Hitting Limit -- //
     if (!limitDebouncer.calculate(limitSwitch.get()) && io.getPosition() != 0.0) {
       io.zeroPosition();
-      elevatorPosition = ElevatorPosition.STOWED;
+      elevatorDesiredPosition = ElevatorPosition.STOWED;
     }
 
     // TODO: Soft Current limits to keep the robot from destroying itself
@@ -113,7 +113,7 @@ public class Elevator extends RBSISubsystem {
                 () -> {
                   homed = true;
                   homing = false;
-                  elevatorPosition = ElevatorPosition.STOWED;
+                  elevatorDesiredPosition = ElevatorPosition.STOWED;
                 },
                 this));
   }
@@ -127,7 +127,7 @@ public class Elevator extends RBSISubsystem {
   // -- Default Method - Constantly Update Position -- //
   public void updatePosition(DoubleSupplier manualVolts) {
     if (!homing && homed && !manualOverride && !exceedsMaxCurrent) {
-      switch (elevatorPosition) {
+      switch (elevatorDesiredPosition) {
         case STOWED:
           if (limitSwitch.get()) {
             runPosition(0);
@@ -149,12 +149,12 @@ public class Elevator extends RBSISubsystem {
   }
 
   public ElevatorPosition getDesiredPosition() {
-    return elevatorPosition;
+    return elevatorDesiredPosition;
   }
 
   // -- Set the setpoint of the Elevator -- //
   public void setDesiredPosition(ElevatorPosition pose) {
-    elevatorPosition = pose;
+    elevatorDesiredPosition = pose;
   }
 
   public void setBrakeMode(boolean enabled) {
