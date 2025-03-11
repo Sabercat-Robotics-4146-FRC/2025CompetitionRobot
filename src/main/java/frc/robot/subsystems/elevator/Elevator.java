@@ -1,11 +1,14 @@
 package frc.robot.subsystems.elevator;
 
+import static edu.wpi.first.units.Units.Volt;
+
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RBSISubsystem;
 import java.util.function.DoubleSupplier;
@@ -14,11 +17,13 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends RBSISubsystem {
   // -- PID & FeedForward values -- //
-  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 200);
-  private static final LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 5);
+  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 0.18);
+  private static final LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 0);
   private static final LoggedTunableNumber kG = new LoggedTunableNumber("Elevator/kG", 0);
-  private static final LoggedTunableNumber kV = new LoggedTunableNumber("Elevator/kV", 0);
+  private static final LoggedTunableNumber kV = new LoggedTunableNumber("Elevator/kV", 0.1);
   private static final LoggedTunableNumber kA = new LoggedTunableNumber("Elevator/kA", 0);
+  private static final LoggedTunableNumber kS = new LoggedTunableNumber("Elevator/kS", 0);
+
   private static final LoggedTunableNumber maxSoftCurrent =
       new LoggedTunableNumber("Elevator/maxSoftCurrent", 80);
 
@@ -30,12 +35,15 @@ public class Elevator extends RBSISubsystem {
 
   // -- Important logged Booleans -- //
   @AutoLogOutput private boolean brakeModeEnabled = true;
-  @AutoLogOutput private boolean manualOverride = true;
+  @AutoLogOutput private boolean manualOverride = false;
 
   @AutoLogOutput private boolean homed = false;
   @AutoLogOutput private boolean homing = false;
 
   @AutoLogOutput private boolean exceedsMaxCurrent = false;
+  @AutoLogOutput private boolean loggedLimitSwitch = false;
+
+  SysIdRoutine sysId;
 
   // -- Limit Switch Stuff -- //
   private final DigitalInput limitSwitch = new DigitalInput(2);
@@ -54,7 +62,37 @@ public class Elevator extends RBSISubsystem {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
-    io.setPID(kP.get(), 0.0, kD.get(), kG.get(), kV.get(), kA.get());
+    io.setPID(kP.get(), 0.0, kD.get(), kG.get(), kV.get(), kA.get(), kS.get());
+
+    sysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null,
+                (state) -> Logger.recordOutput("Elevator/SysIdState", state.toString())),
+            new SysIdRoutine.Mechanism((voltage) -> runVolts(voltage.in(Volt)), null, this));
+
+    sysId.quasistatic(SysIdRoutine.Direction.kForward);
+    sysId.quasistatic(SysIdRoutine.Direction.kReverse);
+    sysId.dynamic(SysIdRoutine.Direction.kForward);
+    sysId.dynamic(SysIdRoutine.Direction.kReverse);
+  }
+
+  public Command getQuasiForward() {
+    return sysId.quasistatic(SysIdRoutine.Direction.kForward);
+  }
+
+  public Command getQuasiReverse() {
+    return sysId.quasistatic(SysIdRoutine.Direction.kReverse);
+  }
+
+  public Command getDynamicForward() {
+    return sysId.dynamic(SysIdRoutine.Direction.kForward);
+  }
+
+  public Command getDynamicReverse() {
+    return sysId.dynamic(SysIdRoutine.Direction.kReverse);
   }
 
   @Override
@@ -62,6 +100,7 @@ public class Elevator extends RBSISubsystem {
     io.updateInputs(inputs);
     System.out.println(io.getPosition());
     Logger.processInputs("Elevator", inputs);
+    loggedLimitSwitch = limitSwitch.get();
 
     motorDisconnectedAlert.set((!inputs.motorConnected));
 
@@ -70,14 +109,17 @@ public class Elevator extends RBSISubsystem {
         || kD.hasChanged(hashCode())
         || kG.hasChanged(hashCode())
         || kV.hasChanged(hashCode())
-        || kA.hasChanged(hashCode())) {
-      io.setPID(kP.get(), 0.0, kD.get(), kG.get(), kV.get(), kA.get());
+        || kA.hasChanged(hashCode())
+        || kS.hasChanged(hashCode())) {
+      io.setPID(kP.get(), 0.0, kD.get(), kG.get(), kV.get(), kA.get(), kS.get());
     }
 
     // -- Zero Position Upon Hitting Limit -- //
-    if (!limitDebouncer.calculate(limitSwitch.get()) && io.getPosition() != 0.0) {
+    if (limitDebouncer.calculate(limitSwitch.get())
+        && io.getPosition() != 0.0
+        && inputs.velocityRadPerSec < 0) {
       io.zeroPosition();
-      elevatorDesiredPosition = ElevatorPosition.STOWED;
+      // elevatorDesiredPosition = ElevatorPosition.STOWED;
     }
 
     // TODO: Soft Current limits to keep the robot from destroying itself
@@ -121,7 +163,7 @@ public class Elevator extends RBSISubsystem {
   public void runPosition(double position) {
     System.out.println(
         "Setting Position to:" + position + " Current position: " + inputs.positionRad);
-    io.runPosition(position, 100);
+    io.runPosition(position, 0);
   }
 
   // -- Default Method - Constantly Update Position -- //
@@ -129,21 +171,24 @@ public class Elevator extends RBSISubsystem {
     if (!homing && homed && !manualOverride && !exceedsMaxCurrent) {
       switch (elevatorDesiredPosition) {
         case STOWED:
-          if (limitSwitch.get()) {
+          if (!limitSwitch.get()) {
             runPosition(0);
           }
           break;
         case L4:
-          runPosition(99);
+          runPosition(22.29);
           break;
         case L3:
-          runPosition(50);
+          runPosition(13.47);
           break;
         case L2:
-          runPosition(25);
+          runPosition(6.45);
+          break;
+        case L1:
+          runPosition(5.00);
           break;
       }
-    } else if (manualOverride) {
+    } else if (manualOverride && !exceedsMaxCurrent) {
       runVolts(manualVolts.getAsDouble());
     }
   }

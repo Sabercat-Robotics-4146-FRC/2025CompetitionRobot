@@ -68,8 +68,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // -- All Sorts of Configuration -- //
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Slot0 = new Slot0Configs().withKP(100).withKI(0).withKD(6);
-    config.Feedback.SensorToMechanismRatio =
-        reduction; // -- Wondering if this is necessarry with out appraoch -- //
+    // config.Feedback.SensorToMechanismRatio =
+    //     reduction; // -- Wondering if this is necessarry with out appraoch -- //
     config.TorqueCurrent.withPeakForwardTorqueCurrent(80.0);
     config.TorqueCurrent.withPeakReverseTorqueCurrent(-80.0);
     config.CurrentLimits.StatorCurrentLimit = 80.0;
@@ -79,7 +79,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // follower.setControl(new Follower(leader.getDeviceID(), true));
 
     position = leader.getPosition();
-    
+
     velocity = leader.getVelocity();
     appliedVolts = leader.getMotorVoltage();
     torqueCurrent = leader.getTorqueCurrent();
@@ -166,13 +166,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   }
 
   @Override
-  public void setPID(double kP, double kI, double kD, double kG, double kV, double kA) {
+  public void setPID(double kP, double kI, double kD, double kG, double kV, double kA, double kS) {
     config.Slot0.kP = kP;
     config.Slot0.kI = kI;
     config.Slot0.kD = kD;
     config.Slot0.kG = kG;
     config.Slot0.kV = kV;
     config.Slot0.kA = kA;
+    config.Slot0.kS = kS;
     config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
     PhoenixUtil.tryUntilOk(5, () -> leader.getConfigurator().apply(config));
     PhoenixUtil.tryUntilOk(5, () -> follower.getConfigurator().apply(config));

@@ -104,7 +104,7 @@ public final class Constants {
   /** General Constants **************************************************** */
   public static final double loopPeriodSecs = 0.02;
 
-  public static final boolean tuningMode = false;
+  public static final boolean tuningMode = true;
 
   /** Physical Constants for Robot Operation ******************************* */
   public static final class PhysicalConstants {
@@ -187,7 +187,7 @@ public final class Constants {
 
   public static final class ElevatorConstants {
 
-    public static final double kElevatorGearRatio = 0;
+    public static final double kElevatorGearRatio = 1;
   }
 
   /** Accelerometer Constants ********************************************** */

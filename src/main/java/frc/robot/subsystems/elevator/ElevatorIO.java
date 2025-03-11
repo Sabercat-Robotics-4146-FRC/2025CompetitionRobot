@@ -29,7 +29,8 @@ public interface ElevatorIO {
   // -- Run elevator output shaft to positionRad with addition feedforward output -- //
   default void runPosition(double positionRad, double feedforward) {}
 
-  default void setPID(double kP, double kI, double kD, double kG, double kV, double kA) {}
+  default void setPID(
+      double kP, double kI, double kD, double kG, double kV, double kA, double kS) {}
 
   default void setBrakeMode(boolean enabled) {}
 
