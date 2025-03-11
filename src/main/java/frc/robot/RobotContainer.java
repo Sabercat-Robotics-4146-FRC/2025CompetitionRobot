@@ -26,8 +26,6 @@ import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,10 +35,16 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.LinearActuatorExtendCommand;
+import frc.robot.commands.LinearActuatorRetractCommand;
+import frc.robot.commands.StopIndexerCommand;
+import frc.robot.commands.StopLinearActuatorCommand;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -48,7 +52,6 @@ import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
-import frc.robot.util.GetJoystickValue;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.OverrideSwitches;
 import frc.robot.util.PowerMonitoring;
@@ -72,6 +75,7 @@ public class RobotContainer {
   private final Accelerometer m_accel;
   private final Vision m_vision;
   private final PowerMonitoring m_power;
+  private final Indexer m_indexer;
 
   /** Dashboard inputs ***************************************************** */
   // AutoChoosers for both supported path planning types
@@ -83,8 +87,8 @@ public class RobotContainer {
   private final LoggedTunableNumber batteryCapacity =
       new LoggedTunableNumber("Battery Amp-Hours", 18.0);
   // EXAMPLE TUNABLE FLYWHEEL SPEED INPUT FROM DASHBOARD
-  private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel Speed", 1500.0);
+  /*private final LoggedTunableNumber flywheelSpeedInput =
+  new LoggedTunableNumber("Flywheel Speed", 1500.0); */
 
   // Alerts
   private final Alert aprilTagLayoutAlert = new Alert("", AlertType.INFO);
@@ -119,6 +123,7 @@ public class RobotContainer {
               default -> null;
             };
         m_accel = new Accelerometer(m_drivebase.getGyro());
+        m_indexer = new Indexer(new IndexerIOTalonFX());
         break;
 
       case SIM:
@@ -132,6 +137,7 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(camera3Name, robotToCamera3, m_drivebase::getPose),
                 new VisionIOPhotonVisionSim(camera4Name, robotToCamera4, m_drivebase::getPose));
         m_accel = new Accelerometer(m_drivebase.getGyro());
+        m_indexer = new Indexer(new IndexerIOTalonFX());
         break;
 
       default:
@@ -140,13 +146,14 @@ public class RobotContainer {
         m_vision =
             new Vision(m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         m_accel = new Accelerometer(m_drivebase.getGyro());
+        m_indexer = new Indexer(new IndexerIOTalonFX());
         break;
     }
 
     // In addition to the initial battery capacity from the Dashbaord, ``PowerMonitoring`` takes all
     // the non-drivebase subsystems for which you wish to have power monitoring; DO NOT include
     // ``m_drivebase``, as that is automatically monitored.
-    m_power = new PowerMonitoring(batteryCapacity);
+    m_power = new PowerMonitoring(batteryCapacity, m_indexer);
 
     // Set up the SmartDashboard Auto Chooser based on auto type
     switch (Constants.getAutoType()) {
@@ -203,6 +210,7 @@ public class RobotContainer {
   private void configureBindings() {
 
     // Send the proper joystick input based on driver preference -- Set this in `Constants.java`
+    /*
     GetJoystickValue driveStickY;
     GetJoystickValue driveStickX;
     GetJoystickValue turnStickX;
@@ -244,7 +252,7 @@ public class RobotContainer {
         .whileTrue(Commands.runOnce(() -> m_drivebase.setMotorBrake(true), m_drivebase));
 
     // Press X button --> Stop with wheels in X-Lock position
-    driverController.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
+    // driverController.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
 
     // Press Y button --> Manually Re-Zero the Gyro
     driverController
@@ -256,7 +264,32 @@ public class RobotContainer {
                             new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())),
                     m_drivebase)
                 .ignoringDisable(true));
+                */
 
+    driverController.x().whileTrue(new IntakeCommand(m_indexer));
+    driverController.x().whileFalse(new StopIndexerCommand(m_indexer));
+    driverController.leftBumper().whileTrue(new LinearActuatorExtendCommand(m_indexer));
+    
+    //driverController.leftBumper().whileFalse(new StopLinearActuatorCommand(m_indexer));
+    
+    driverController.rightBumper().whileTrue(new LinearActuatorRetractCommand(m_indexer));
+    
+    //driverController.rightBumper().whileFalse(new StopLinearActuatorCommand(m_indexer));
+     
+    // runs indexer backword
+    // driverController.leftTrigger().whileTrue(new RunIndexerBackwordCommand(m_indexer));
+
+
+    // Press RIGHT BUMPER --> Run the example flywheel
+    /*
+    driverController
+        .rightBumper()
+        .whileTrue(
+            Commands.startEnd(
+                () -> m_flywheel.runVelocity(flywheelSpeedInput.get()),
+                m_flywheel::stop,
+                m_flywheel));
+                */
   }
 
   /**

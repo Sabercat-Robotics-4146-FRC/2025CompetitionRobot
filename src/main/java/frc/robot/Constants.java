@@ -161,6 +161,51 @@ public final class Constants {
     // kSteerIZ = 0.0;
   }
 
+  /** Example Flywheel Mechanism Constants ********************************* */
+  /*
+  public static final class FlywheelConstants {
+
+    // Mechanism idle mode
+    public static final MotorIdleMode kFlywheelIdleMode = MotorIdleMode.COAST; // BRAKE, COAST
+
+    // Mechanism motor gear ratio
+    public static final double kFlywheelGearRatio = 1.5;
+
+    // MODE == REAL / REPLAY
+    // Feedforward constants
+    public static final double kStaticGainReal = 0.1;
+    public static final double kVelocityGainReal = 0.05;
+    // Feedback (PID) constants
+    public static final PIDConstants pidReal = new PIDConstants(1.0, 0.0, 0.0);
+
+    // MODE == SIM
+    // Feedforward constants
+    public static final double kStaticGainSim = 0.0;
+    public static final double kVelocityGainSim = 0.03;
+    // Feedback (PID) constants
+    public static final PIDConstants pidSim = new PIDConstants(1.0, 0.0, 0.0);
+  }
+    */
+
+  public static final class IndexerConstants {
+
+    public static final MotorIdleMode kIndexerIdleMode = MotorIdleMode.COAST;
+    public static final double kIndexerGearRatio = 0;
+
+    // indexer speed in voltage (run forward)
+    public static final double indexerVoltageOne = 1.2;
+
+    // emergency indexer speed in voltage (run backword)
+    public static final double indexerVoltageTwo = -1.2;
+
+    // linear actuator speeds (between -1.0 and 1.0)
+    public static final double linearActuatorExtend = 1;
+    public static final double linearActuatorRetract = -1;
+
+    // delay time in seconds to stop voltage of indexer
+    public static final double delayInSeconds = 0.5;
+  }
+
   /** Accelerometer Constants ********************************************** */
   public static class AccelerometerConstants {
 
@@ -340,19 +385,22 @@ public final class Constants {
     /* SUBSYSTEM CAN DEVICE IDS */
     // This is where mechanism subsystem devices are defined (Including ID, bus, and power port)
     // Example:
-    public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, "", 8);
-    public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, "", 9);
+    // public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, "", 8);
+    // public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, "", 9);
+
+    public static final RobotDeviceId INDEXER_MOTOR = new RobotDeviceId(16, "", 17);
 
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined
     // Example:
     // public static final int ELEVATOR_BOTTOM_LIMIT = 3;
-
+    public static final int IR_SENSOR = 0;
     /* LINEAR SERVO PWM CHANNELS */
     // This is where PWM-controlled devices (actuators, servos, pneumatics, etc.)
     // are defined
     // Example:
     // public static final int INTAKE_SERVO = 0;
+    public static final int LINEAR_ACTUATOR = 1;
   }
 
   /** AprilTag Field Layout ************************************************ */
