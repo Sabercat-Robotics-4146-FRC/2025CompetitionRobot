@@ -1,4 +1,21 @@
+// Copyright (c) 2024-2025 Az-FIRST
+// http://github.com/AZ-First
+// Copyright (c) 2021-2025 FRC 6328
+// http://github.com/Mechanical-Advantage
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
 package frc.robot.subsystems.indexer;
+
+import static frc.robot.Constants.IndexerConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -13,17 +30,17 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.Servo;
 import frc.robot.Constants.CANandPowerPorts;
-import frc.robot.Constants.IndexerConstants;
 
 public class IndexerIOTalonFX implements IndexerIO {
+
+  // Define the leader / follower motors from the Ports section of RobotContainer
   private final TalonFX motor =
       new TalonFX(
           CANandPowerPorts.INDEXER_MOTOR.getDeviceNumber(),
           CANandPowerPorts.INDEXER_MOTOR.getBus());
-  private final Servo linearActuator = new Servo(CANandPowerPorts.INDEXER_SERVO);
 
+  // IMPORTANT: Include here all devices listed above that are part of this mechanism!
   public final int[] powerPorts = {
     CANandPowerPorts.INDEXER_MOTOR.getPowerPort(),
   };
@@ -37,9 +54,8 @@ public class IndexerIOTalonFX implements IndexerIO {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.SupplyCurrentLimit = 30.0;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
-
     config.MotorOutput.NeutralMode =
-        switch (IndexerConstants.kIndexerIdleMode) {
+        switch (kIndexerIdleMode) {
           case COAST -> NeutralModeValue.Coast;
           case BRAKE -> NeutralModeValue.Brake;
         };
@@ -54,15 +70,12 @@ public class IndexerIOTalonFX implements IndexerIO {
   public void updateInputs(IndexerIOInputs inputs) {
     BaseStatusSignal.refreshAll(motorPosition, motorVelocity, motorAppliedVolts, motorCurrent);
     inputs.positionRad =
-        Units.rotationsToRadians(motorPosition.getValueAsDouble())
-            / IndexerConstants.kIndexerGearRatio;
+        Units.rotationsToRadians(motorPosition.getValueAsDouble()) / kIndexerGearRatio;
     inputs.velocityRadPerSec =
-        Units.rotationsToRadians(motorVelocity.getAppliedUpdateFrequency())
-            / IndexerConstants.kIndexerGearRatio;
+        Units.rotationsToRadians(motorVelocity.getValueAsDouble()) / kIndexerGearRatio;
     inputs.appliedVolts = motorAppliedVolts.getValueAsDouble();
     inputs.currentAmps =
         new double[] {motorCurrent.getValueAsDouble(), motorCurrent.getValueAsDouble()};
-    inputs.servoPosition = linearActuator.getPosition();
   }
 
   @Override
@@ -76,18 +89,12 @@ public class IndexerIOTalonFX implements IndexerIO {
   }
 
   @Override
-  public void setServo(double position) {
-    linearActuator.setPosition(position);
-  }
-
-  @Override
   public void stop() {
     motor.stopMotor();
-    linearActuator.setSpeed(0);
   }
 
   @Override
-  public void conifgurePID(double kP, double kI, double kD) {
+  public void configurePID(double kP, double kI, double kD) {
     var config = new Slot0Configs();
     config.kP = kP;
     config.kI = kI;
