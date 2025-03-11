@@ -74,7 +74,7 @@ public final class Constants {
   private static SwerveType swerveType = SwerveType.PHOENIX6; // PHOENIX6, YAGSL
   private static CTREPro phoenixPro = CTREPro.LICENSED; // LICENSED, UNLICENSED
   private static AutoType autoType = AutoType.PATHPLANNER; // PATHPLANNER, CHOREO
-  private static VisionType visionType = VisionType.NONE; // PHOTON, LIMELIGHT, NONE
+  private static VisionType visionType = VisionType.PHOTON; // PHOTON, LIMELIGHT, NONE
 
   /** Enumerate the robot types (name your robots here) */
   public static enum RobotType {
@@ -159,30 +159,6 @@ public final class Constants {
     // kDriveIZ = 0.0;
     // kSteerF = 0.0;
     // kSteerIZ = 0.0;
-  }
-
-  /** Example Flywheel Mechanism Constants ********************************* */
-  public static final class FlywheelConstants {
-
-    // Mechanism idle mode
-    public static final MotorIdleMode kFlywheelIdleMode = MotorIdleMode.COAST; // BRAKE, COAST
-
-    // Mechanism motor gear ratio
-    public static final double kFlywheelGearRatio = 1.5;
-
-    // MODE == REAL / REPLAY
-    // Feedforward constants
-    public static final double kStaticGainReal = 0.1;
-    public static final double kVelocityGainReal = 0.05;
-    // Feedback (PID) constants
-    public static final PIDConstants pidReal = new PIDConstants(1.0, 0.0, 0.0);
-
-    // MODE == SIM
-    // Feedforward constants
-    public static final double kStaticGainSim = 0.0;
-    public static final double kVelocityGainSim = 0.03;
-    // Feedback (PID) constants
-    public static final PIDConstants pidSim = new PIDConstants(1.0, 0.0, 0.0);
   }
 
   /** Accelerometer Constants ********************************************** */
@@ -296,16 +272,22 @@ public final class Constants {
   /** Vision Camera Posses ************************************************* */
   public static class Cameras {
     // Camera names, must match names configured on coprocessor
-    public static String camera0Name = "camera_0";
     public static String camera1Name = "camera_1";
+    public static String camera2Name = "camera_2";
+    public static String camera3Name = "camera_3";
+    public static String camera4Name = "camera_4";
     // ... And more, if needed
 
     // Robot to camera transforms
     // (ONLY USED FOR PHOTONVISION -- Limelight: configure in web UI instead)
-    public static Transform3d robotToCamera0 =
-        new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
     public static Transform3d robotToCamera1 =
+        new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
+    public static Transform3d robotToCamera2 =
         new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+        public static Transform3d robotToCamera3 =
+            new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+            public static Transform3d robotToCamera4 =
+                new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
 
     // Standard deviation multipliers for each camera
     // (Adjust to trust some cameras more than others)

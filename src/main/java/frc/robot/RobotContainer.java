@@ -41,9 +41,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.flywheel_example.Flywheel;
-import frc.robot.subsystems.flywheel_example.FlywheelIO;
-import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -71,8 +68,6 @@ public class RobotContainer {
   /** Declare the robot subsystems here ************************************ */
   // These are the "Active Subsystems" that the robot controlls
   private final Drive m_drivebase;
-
-  private final Flywheel m_flywheel;
   // These are "Virtual Subsystems" that report information but have no motors
   private final Accelerometer m_accel;
   private final Vision m_vision;
@@ -106,19 +101,18 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // YAGSL drivebase, get config from deploy directory
         m_drivebase = new Drive();
-        m_flywheel = new Flywheel(new FlywheelIOSim()); // new Flywheel(new FlywheelIOTalonFX());
         m_vision =
             switch (Constants.getVisionType()) {
               case PHOTON ->
                   new Vision(
                       m_drivebase::addVisionMeasurement,
-                      new VisionIOPhotonVision(camera0Name, robotToCamera0),
-                      new VisionIOPhotonVision(camera1Name, robotToCamera1));
+                      new VisionIOPhotonVision(camera1Name, robotToCamera1),
+                      new VisionIOPhotonVision(camera2Name, robotToCamera2),
+                      new VisionIOPhotonVision(camera3Name, robotToCamera3),
+                      new VisionIOPhotonVision(camera4Name, robotToCamera4));
               case LIMELIGHT ->
-                  new Vision(
-                      m_drivebase::addVisionMeasurement,
-                      new VisionIOLimelight(camera0Name, m_drivebase::getRotation),
-                      new VisionIOLimelight(camera1Name, m_drivebase::getRotation));
+              new Vision(
+                m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
               case NONE ->
                   new Vision(
                       m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
@@ -130,19 +124,19 @@ public class RobotContainer {
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         m_drivebase = new Drive();
-        m_flywheel = new Flywheel(new FlywheelIOSim() {});
         m_vision =
             new Vision(
                 m_drivebase::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drivebase::getPose),
-                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drivebase::getPose));
+                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drivebase::getPose),
+                new VisionIOPhotonVisionSim(camera2Name, robotToCamera2, m_drivebase::getPose),
+                new VisionIOPhotonVisionSim(camera3Name, robotToCamera3, m_drivebase::getPose),
+                new VisionIOPhotonVisionSim(camera4Name, robotToCamera4, m_drivebase::getPose));
         m_accel = new Accelerometer(m_drivebase.getGyro());
         break;
 
       default:
         // Replayed robot, disable IO implementations
         m_drivebase = new Drive();
-        m_flywheel = new Flywheel(new FlywheelIO() {});
         m_vision =
             new Vision(m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         m_accel = new Accelerometer(m_drivebase.getGyro());
@@ -152,7 +146,7 @@ public class RobotContainer {
     // In addition to the initial battery capacity from the Dashbaord, ``PowerMonitoring`` takes all
     // the non-drivebase subsystems for which you wish to have power monitoring; DO NOT include
     // ``m_drivebase``, as that is automatically monitored.
-    m_power = new PowerMonitoring(batteryCapacity, m_flywheel);
+    m_power = new PowerMonitoring(batteryCapacity);
 
     // Set up the SmartDashboard Auto Chooser based on auto type
     switch (Constants.getAutoType()) {
@@ -263,14 +257,6 @@ public class RobotContainer {
                     m_drivebase)
                 .ignoringDisable(true));
 
-    // Press RIGHT BUMPER --> Run the example flywheel
-    driverController
-        .rightBumper()
-        .whileTrue(
-            Commands.startEnd(
-                () -> m_flywheel.runVelocity(flywheelSpeedInput.get()),
-                m_flywheel::stop,
-                m_flywheel));
   }
 
   /**
@@ -341,19 +327,6 @@ public class RobotContainer {
           "Drive SysId (Dynamic Reverse)",
           m_drivebase.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-      // Example Flywheel SysId Characterization
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Quasistatic Forward)",
-          m_flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Quasistatic Reverse)",
-          m_flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Dynamic Forward)",
-          m_flywheel.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Dynamic Reverse)",
-          m_flywheel.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
   }
 
