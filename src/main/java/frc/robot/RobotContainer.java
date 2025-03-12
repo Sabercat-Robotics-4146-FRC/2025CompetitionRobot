@@ -26,8 +26,6 @@ import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -46,6 +44,9 @@ import frc.robot.commands.indexer.RunIndexerBackwordCommand;
 import frc.robot.commands.indexer.StopIndexerCommand;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
@@ -76,6 +77,7 @@ public class RobotContainer {
   private final Accelerometer m_accel;
   private final Vision m_vision;
   private final PowerMonitoring m_power;
+  private final Elevator m_Elevator;
   private final Indexer m_indexer;
 
   /** Dashboard inputs ***************************************************** */
@@ -106,6 +108,7 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // YAGSL drivebase, get config from deploy directory
         m_drivebase = new Drive();
+        m_Elevator = new Elevator(new ElevatorIOTalonFX());
         m_vision =
             switch (Constants.getVisionType()) {
               case PHOTON ->
@@ -130,6 +133,8 @@ public class RobotContainer {
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         m_drivebase = new Drive();
+
+        m_Elevator = new Elevator(new ElevatorIOTalonFX());
         m_vision =
             new Vision(
                 m_drivebase::addVisionMeasurement,
@@ -144,6 +149,8 @@ public class RobotContainer {
       default:
         // Replayed robot, disable IO implementations
         m_drivebase = new Drive();
+
+        m_Elevator = new Elevator(new ElevatorIOTalonFX());
         m_vision =
             new Vision(m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         m_accel = new Accelerometer(m_drivebase.getGyro());
@@ -225,12 +232,12 @@ public class RobotContainer {
     }
 
     // SET STANDARD DRIVING AS DEFAULT COMMAND FOR THE DRIVEBASE
-    m_drivebase.setDefaultCommand(
-        DriveCommands.fieldRelativeDrive(
-            m_drivebase,
-            () -> -driveStickY.value(),
-            () -> -driveStickX.value(),
-            () -> -turnStickX.value()));
+    // m_drivebase.setDefaultCommand(
+    //     DriveCommands.fieldRelativeDrive(
+    //         m_drivebase,
+    //         () -> -driveStickY.value(),
+    //         () -> -driveStickX.value(),
+    //         () -> -turnStickX.value()));
 
     // ** Example Commands -- Remap, remove, or change as desired **
     // Press B button while driving --> ROBOT-CENTRIC
@@ -247,23 +254,65 @@ public class RobotContainer {
     //             m_drivebase));
 
     // Press A button -> BRAKE
-    driverController
-        .a()
-        .whileTrue(Commands.runOnce(() -> m_drivebase.setMotorBrake(true), m_drivebase));
 
     // Press X button --> Stop with wheels in X-Lock position
     // driverController.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
 
     // Press Y button --> Manually Re-Zero the Gyro
+    m_Elevator.setDefaultCommand(
+        Commands.runOnce(
+            () ->
+                m_Elevator.updatePosition(
+                    () ->
+                        driverController.getLeftTriggerAxis() * 6
+                            - driverController.getRightTriggerAxis() * 6),
+            m_Elevator));
+    driverController.y().onTrue(m_Elevator.goHome());
     driverController
-        .y()
+        .a()
         .onTrue(
             Commands.runOnce(
-                    () ->
-                        m_drivebase.resetPose(
-                            new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())),
-                    m_drivebase)
-                .ignoringDisable(true));
+                () -> {
+                  m_Elevator.setDesiredPosition(ElevatorPosition.STOWED);
+                },
+                m_Elevator));
+    driverController
+        .povDown()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setDesiredPosition(ElevatorPosition.L1);
+                },
+                m_Elevator));
+    driverController
+        .povLeft()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setDesiredPosition(ElevatorPosition.L2);
+                },
+                m_Elevator));
+    driverController
+        .povRight()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setDesiredPosition(ElevatorPosition.L3);
+                },
+                m_Elevator));
+    driverController
+        .povUp()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setDesiredPosition(ElevatorPosition.L4);
+                },
+                m_Elevator));
+
+    // driverController.povUp().whileTrue(m_Elevator.getDynamicForward());
+    // driverController.povDown().whileTrue(m_Elevator.getDynamicReverse());
+    // driverController.povLeft().whileTrue(m_Elevator.getQuasiForward());
+    // driverController.povRight().whileTrue(m_Elevator.getQuasiReverse());
 
     // driverController
     //     .y()

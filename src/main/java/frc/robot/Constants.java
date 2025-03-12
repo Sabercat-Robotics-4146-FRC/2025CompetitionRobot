@@ -104,7 +104,7 @@ public final class Constants {
   /** General Constants **************************************************** */
   public static final double loopPeriodSecs = 0.02;
 
-  public static final boolean tuningMode = false;
+  public static final boolean tuningMode = true;
 
   /** Physical Constants for Robot Operation ******************************* */
   public static final class PhysicalConstants {
@@ -204,6 +204,11 @@ public final class Constants {
 
     // delay time in seconds to stop voltage of indexer
     public static final double delayInSeconds = 0.5;
+  }
+
+  public static final class ElevatorConstants {
+
+    public static final double kElevatorGearRatio = 1;
   }
 
   /** Accelerometer Constants ********************************************** */
@@ -389,6 +394,9 @@ public final class Constants {
     // public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, "", 9);
 
     public static final RobotDeviceId INDEXER_MOTOR = new RobotDeviceId(16, "", 17);
+
+    public static final RobotDeviceId ELEVATOR_LEADER = new RobotDeviceId(14, "Default Name", 16);
+    public static final RobotDeviceId ELEVATOR_FOLLOWER = new RobotDeviceId(15, "Default Name", 17);
 
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined
