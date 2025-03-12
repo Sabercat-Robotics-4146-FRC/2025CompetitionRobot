@@ -17,12 +17,12 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends RBSISubsystem {
   // -- PID & FeedForward values -- //
-  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 0.0);
+  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 0.55);
   private static final LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 0);
-  private static final LoggedTunableNumber kG = new LoggedTunableNumber("Elevator/kG", 0);
-  private static final LoggedTunableNumber kV = new LoggedTunableNumber("Elevator/kV", 0.017909);
-  private static final LoggedTunableNumber kA = new LoggedTunableNumber("Elevator/kA", 0.002368);
-  private static final LoggedTunableNumber kS = new LoggedTunableNumber("Elevator/kS", 0.16643);
+  private static final LoggedTunableNumber kG = new LoggedTunableNumber("Elevator/kG", 0.84);
+  private static final LoggedTunableNumber kV = new LoggedTunableNumber("Elevator/kV", 0.0);
+  private static final LoggedTunableNumber kA = new LoggedTunableNumber("Elevator/kA", 0.0);
+  private static final LoggedTunableNumber kS = new LoggedTunableNumber("Elevator/kS", 0.0);
   private static final LoggedTunableNumber kI = new LoggedTunableNumber("Elevator/kI", 0);
 
   private static final LoggedTunableNumber maxSoftCurrent =
