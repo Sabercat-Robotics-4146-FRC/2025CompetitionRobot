@@ -17,12 +17,13 @@ import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends RBSISubsystem {
   // -- PID & FeedForward values -- //
-  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 0.18);
+  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 0.0);
   private static final LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 0);
   private static final LoggedTunableNumber kG = new LoggedTunableNumber("Elevator/kG", 0);
-  private static final LoggedTunableNumber kV = new LoggedTunableNumber("Elevator/kV", 0.1);
-  private static final LoggedTunableNumber kA = new LoggedTunableNumber("Elevator/kA", 0);
-  private static final LoggedTunableNumber kS = new LoggedTunableNumber("Elevator/kS", 0);
+  private static final LoggedTunableNumber kV = new LoggedTunableNumber("Elevator/kV", 0.017909);
+  private static final LoggedTunableNumber kA = new LoggedTunableNumber("Elevator/kA", 0.002368);
+  private static final LoggedTunableNumber kS = new LoggedTunableNumber("Elevator/kS", 0.16643);
+  private static final LoggedTunableNumber kI = new LoggedTunableNumber("Elevator/kI", 0);
 
   private static final LoggedTunableNumber maxSoftCurrent =
       new LoggedTunableNumber("Elevator/maxSoftCurrent", 80);
@@ -62,7 +63,7 @@ public class Elevator extends RBSISubsystem {
 
   public Elevator(ElevatorIO io) {
     this.io = io;
-    io.setPID(kP.get(), 0.0, kD.get(), kG.get(), kV.get(), kA.get(), kS.get());
+    io.setPID(kP.get(), kI.get(), kD.get(), kG.get(), kV.get(), kA.get(), kS.get());
 
     sysId =
         new SysIdRoutine(
@@ -98,7 +99,7 @@ public class Elevator extends RBSISubsystem {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    System.out.println(io.getPosition());
+    System.out.println(inputs.positionRad);
     Logger.processInputs("Elevator", inputs);
     loggedLimitSwitch = limitSwitch.get();
 
@@ -110,8 +111,9 @@ public class Elevator extends RBSISubsystem {
         || kG.hasChanged(hashCode())
         || kV.hasChanged(hashCode())
         || kA.hasChanged(hashCode())
-        || kS.hasChanged(hashCode())) {
-      io.setPID(kP.get(), 0.0, kD.get(), kG.get(), kV.get(), kA.get(), kS.get());
+        || kS.hasChanged(hashCode())
+        || kI.hasChanged(hashCode())) {
+      io.setPID(kP.get(), kI.get(), kD.get(), kG.get(), kV.get(), kA.get(), kS.get());
     }
 
     // -- Zero Position Upon Hitting Limit -- //
@@ -149,7 +151,7 @@ public class Elevator extends RBSISubsystem {
               homed = false;
             },
             this),
-        Commands.repeatingSequence(Commands.runOnce(() -> runVolts(-2)))
+        Commands.repeatingSequence(Commands.runOnce(() -> runVolts(-0.5)))
             .until(() -> limitSwitch.get())
             .andThen(
                 () -> {
@@ -176,16 +178,16 @@ public class Elevator extends RBSISubsystem {
           }
           break;
         case L4:
-          runPosition(22.29);
+          runPosition(138);
           break;
         case L3:
-          runPosition(13.47);
+          runPosition(84);
           break;
         case L2:
-          runPosition(6.45);
+          runPosition(40);
           break;
         case L1:
-          runPosition(5.00);
+          runPosition(25);
           break;
       }
     } else if (manualOverride && !exceedsMaxCurrent) {
