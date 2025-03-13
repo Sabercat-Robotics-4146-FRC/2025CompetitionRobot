@@ -12,7 +12,7 @@ public class LinearActuatorExtendCommand extends Command {
 
   @Override
   public void execute() {
-    linearActuator.extendLinearActuator();
+    linearActuator.setExtended(true);
   }
 
   @Override

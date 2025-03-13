@@ -12,7 +12,7 @@ public class LinearActuatorRetractCommand extends Command {
 
   @Override
   public void execute() {
-    linearActuator.retractLinearActuator();
+    linearActuator.setExtended(false);
   }
 
   @Override

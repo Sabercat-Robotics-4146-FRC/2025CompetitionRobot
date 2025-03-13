@@ -26,6 +26,10 @@ import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,11 +41,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.indexer.IntakeCommand;
+import frc.robot.commands.composition.Feed;
+import frc.robot.commands.composition.Score;
 import frc.robot.commands.indexer.LinearActuatorExtendCommand;
 import frc.robot.commands.indexer.LinearActuatorRetractCommand;
 import frc.robot.commands.indexer.RunIndexerBackwordCommand;
-import frc.robot.commands.indexer.StopIndexerCommand;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -60,6 +64,7 @@ import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.OverrideSwitches;
 import frc.robot.util.PowerMonitoring;
 import frc.robot.util.RBSIEnum;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /** This is the location for defining robot hardware, commands, and controller button bindings. */
@@ -78,6 +83,7 @@ public class RobotContainer {
   private final Vision m_vision;
   private final PowerMonitoring m_power;
   private final Elevator m_Elevator;
+  private Twist2d robotVelocity = new Twist2d();
   private final Indexer m_indexer;
 
   /** Dashboard inputs ***************************************************** */
@@ -107,7 +113,7 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         // YAGSL drivebase, get config from deploy directory
-        m_drivebase = new Drive();
+        m_drivebase = new Drive(this);
         m_Elevator = new Elevator(new ElevatorIOTalonFX());
         m_vision =
             switch (Constants.getVisionType()) {
@@ -132,7 +138,7 @@ public class RobotContainer {
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        m_drivebase = new Drive();
+        m_drivebase = new Drive(this);
 
         m_Elevator = new Elevator(new ElevatorIOTalonFX());
         m_vision =
@@ -148,7 +154,7 @@ public class RobotContainer {
 
       default:
         // Replayed robot, disable IO implementations
-        m_drivebase = new Drive();
+        m_drivebase = new Drive(this);
 
         m_Elevator = new Elevator(new ElevatorIOTalonFX());
         m_vision =
@@ -162,6 +168,8 @@ public class RobotContainer {
     // the non-drivebase subsystems for which you wish to have power monitoring; DO NOT include
     // ``m_drivebase``, as that is automatically monitored.
     m_power = new PowerMonitoring(batteryCapacity, m_indexer);
+
+    NamedCommands.registerCommand("Score", new Score(m_Elevator, m_indexer, m_drivebase, this));
 
     // Set up the SmartDashboard Auto Chooser based on auto type
     switch (Constants.getAutoType()) {
@@ -203,6 +211,10 @@ public class RobotContainer {
     configureBindings();
   }
 
+  public void addVelocityData(Twist2d robotVelocity) {
+    this.robotVelocity = robotVelocity;
+  }
+
   /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
   private void defineAutoCommands() {
 
@@ -232,12 +244,12 @@ public class RobotContainer {
     }
 
     // SET STANDARD DRIVING AS DEFAULT COMMAND FOR THE DRIVEBASE
-    // m_drivebase.setDefaultCommand(
-    //     DriveCommands.fieldRelativeDrive(
-    //         m_drivebase,
-    //         () -> -driveStickY.value(),
-    //         () -> -driveStickX.value(),
-    //         () -> -turnStickX.value()));
+    m_drivebase.setDefaultCommand(
+        DriveCommands.fieldRelativeDrive(
+            m_drivebase,
+            () -> -driveStickY.value(),
+            () -> -driveStickX.value(),
+            () -> -turnStickX.value()));
 
     // ** Example Commands -- Remap, remove, or change as desired **
     // Press B button while driving --> ROBOT-CENTRIC
@@ -259,21 +271,28 @@ public class RobotContainer {
     // driverController.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
 
     // Press Y button --> Manually Re-Zero the Gyro
-    m_Elevator.setDefaultCommand(
-        Commands.runOnce(
-            () ->
-                m_Elevator.updatePosition(
-                    () ->
-                        driverController.getLeftTriggerAxis() * 6
-                            - driverController.getRightTriggerAxis() * 6),
-            m_Elevator));
-    driverController.y().onTrue(m_Elevator.goHome());
+    // m_Elevator.setDefaultCommand(
+    //     Commands.runOnce(
+    //         () ->
+    //             m_Elevator.updatePosition(
+    //                 () ->
+    //                     driverController.getLeftTriggerAxis() * 6
+    //                         - driverController.getRightTriggerAxis() * 6),
+    //         m_Elevator));
+    driverController
+        .y()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setHoming(true);
+                  m_Elevator.goHome().schedule();
+                }));
     driverController
         .a()
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_Elevator.setDesiredPosition(ElevatorPosition.STOWED);
+                  m_Elevator.setSelectedPosition(ElevatorPosition.STOWED);
                 },
                 m_Elevator));
     driverController
@@ -281,7 +300,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_Elevator.setDesiredPosition(ElevatorPosition.L1);
+                  m_Elevator.setSelectedPosition(ElevatorPosition.L1);
                 },
                 m_Elevator));
     driverController
@@ -289,7 +308,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_Elevator.setDesiredPosition(ElevatorPosition.L2);
+                  m_Elevator.setSelectedPosition(ElevatorPosition.L2);
                 },
                 m_Elevator));
     driverController
@@ -297,7 +316,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_Elevator.setDesiredPosition(ElevatorPosition.L3);
+                  m_Elevator.setSelectedPosition(ElevatorPosition.L3);
                 },
                 m_Elevator));
     driverController
@@ -305,7 +324,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  m_Elevator.setDesiredPosition(ElevatorPosition.L4);
+                  m_Elevator.setSelectedPosition(ElevatorPosition.L4);
                 },
                 m_Elevator));
 
@@ -322,8 +341,12 @@ public class RobotContainer {
     // Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())));}
     //         ));
 
-    driverController.x().whileTrue(new IntakeCommand(m_indexer));
-    driverController.x().whileFalse(new StopIndexerCommand(m_indexer));
+    // .x().whileTrue(new ScoreL2(m_Elevator, m_indexer));
+    // driverController.x().onTrue(new AlignNearestTag(m_drivebase, this));
+    driverController.b().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
+
+    driverController.x().onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this));
+    // driverController.x().whileFalse(new StopIndexerCommand(m_indexer));
     driverController.leftBumper().whileTrue(new LinearActuatorExtendCommand(m_indexer));
 
     // driverController.leftBumper().whileFalse(new StopLinearActuatorCommand(m_indexer));
@@ -362,6 +385,14 @@ public class RobotContainer {
   /** Set the motor neutral mode to BRAKE / COAST for T/F */
   public void setMotorBrake(boolean brake) {
     m_drivebase.setMotorBrake(brake);
+  }
+
+  @AutoLogOutput(key = "RobotState/FieldVelocity")
+  public Twist2d fieldVelocity(Rotation2d rotation) {
+    Translation2d linearFieldVelocity =
+        new Translation2d(robotVelocity.dx, robotVelocity.dy).rotateBy(rotation);
+    return new Twist2d(
+        linearFieldVelocity.getX(), linearFieldVelocity.getY(), robotVelocity.dtheta);
   }
 
   /** Updates the alerts. */

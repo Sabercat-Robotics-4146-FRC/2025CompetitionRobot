@@ -24,9 +24,11 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -193,10 +195,10 @@ public final class Constants {
     public static final double kIndexerGearRatio = 0;
 
     // indexer speed in voltage (run forward)
-    public static final double indexerVoltageOne = 1.2;
+    public static final double indexerVoltageOne = 2.5;
 
     // emergency indexer speed in voltage (run backword)
-    public static final double indexerVoltageTwo = -1.2;
+    public static final double indexerVoltageTwo = -2;
 
     // linear actuator speeds (between -1.0 and 1.0)
     public static final double linearActuatorExtend = 1;
@@ -209,6 +211,38 @@ public final class Constants {
   public static final class ElevatorConstants {
 
     public static final double kElevatorGearRatio = 1;
+  }
+
+  public static final class RobotDesiredPositions {
+    public static final class DesiredPosition {
+      public String name;
+      public Pose2d pose;
+
+      public DesiredPosition(String name, Pose2d pose) {
+        this.name = name;
+        this.pose = pose;
+      }
+    }
+
+    public static final DesiredPosition[] POSITIONS = {
+      new DesiredPosition(
+          "SCORE_6",
+          new Pose2d(new Translation2d(13.75, 2.75), new Rotation2d(2))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_7",
+          new Pose2d(new Translation2d(13.84, 4.26), new Rotation2d(-3.05))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_11",
+          new Pose2d(new Translation2d(16.5, 1), new Rotation2d(2.3))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "FEEDER_1",
+          new Pose2d(new Translation2d(16.39, 1.55), new Rotation2d(2.25))
+              .transformBy(FieldOffsetCompensation.FEEDER)),
+      new DesiredPosition("TEST", new Pose2d(new Translation2d(13.75, 1.80), new Rotation2d(1.415)))
+    };
   }
 
   /** Accelerometer Constants ********************************************** */
@@ -331,19 +365,37 @@ public final class Constants {
     // Robot to camera transforms
     // (ONLY USED FOR PHOTONVISION -- Limelight: configure in web UI instead)
     public static Transform3d robotToCamera1 =
-        new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
+        new Transform3d(
+            Units.inchesToMeters(-6.208),
+            Units.inchesToMeters(12.21),
+            Units.inchesToMeters(8.7),
+            new Rotation3d(0.0, 0.0, 0.0));
     public static Transform3d robotToCamera2 =
-        new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+        new Transform3d(
+            Units.inchesToMeters(-15.052),
+            Units.inchesToMeters(9.5),
+            Units.inchesToMeters(36),
+            new Rotation3d(0.0, -0.436, Math.PI / 2));
     public static Transform3d robotToCamera3 =
-        new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+        new Transform3d(
+            Units.inchesToMeters(-4.329),
+            Units.inchesToMeters(12.05),
+            Units.inchesToMeters(13.05),
+            new Rotation3d(0, 0.0, -Math.PI / 2));
     public static Transform3d robotToCamera4 =
-        new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+        new Transform3d(
+            Units.inchesToMeters(-8.979),
+            Units.inchesToMeters(-12.21),
+            Units.inchesToMeters(18.6),
+            new Rotation3d(0.0, 0.0, Math.PI));
 
     // Standard deviation multipliers for each camera
     // (Adjust to trust some cameras more than others)
     public static double[] cameraStdDevFactors =
         new double[] {
           1.0, // Camera 0
+          1.0,
+          1.0,
           1.0 // Camera 1
         };
   }

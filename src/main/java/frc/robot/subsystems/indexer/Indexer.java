@@ -19,9 +19,9 @@ public class Indexer extends RBSISubsystem {
   private final Servo linearActuator = new Servo(CANandPowerPorts.LINEAR_ACTUATOR);
   private double indexerVoltageOne = IndexerConstants.indexerVoltageOne;
   private final double indexerVoltageTwo = IndexerConstants.indexerVoltageTwo;
-  private final double linearActuatorExtend = IndexerConstants.linearActuatorExtend;
-  private final double linearActuatorRetract = IndexerConstants.linearActuatorRetract;
-  private final Debouncer limitDebouncer = new Debouncer(0.2);
+  private final Debouncer limitDebouncer = new Debouncer(0.05);
+
+  @AutoLogOutput private boolean extended = false;
 
   // Indexer constructor which takes in IndexerIOTalonFX object
   public Indexer(IndexerIOTalonFX io) {
@@ -37,36 +37,21 @@ public class Indexer extends RBSISubsystem {
   // run indexer motor voltage (run forward)
   public void runVoltage() {
     io.setVoltage(indexerVoltageOne);
-    System.out.println("the motor is running");
   }
 
   // emergency indexer voltage (run backword)
   public void runVoltageBackword() {
     io.setVoltage(indexerVoltageTwo);
-    System.out.println("the motor is running backword");
   }
 
   // stop indexer motor
   public void stopVoltage() {
     io.stop();
-    System.out.println("The motor is stopping");
   }
 
   // extends the linear actuator
-  public void extendLinearActuator() {
-    linearActuator.setSpeed(linearActuatorExtend);
-    System.out.println("Actuator is running at " + linearActuator.getSpeed());
-  }
-
-  // retracts the linear actuator
-  public void retractLinearActuator() {
-    linearActuator.setSpeed(linearActuatorRetract);
-  }
-
-  // stop the linear actuator
-  public void stopLinearActuator() {
-    linearActuator.setDisabled();
-    System.out.println("Linear actuator has stopped");
+  public void setExtended(boolean val) {
+    extended = val;
   }
 
   // log velocity rpm on advantage scope
@@ -85,5 +70,15 @@ public class Indexer extends RBSISubsystem {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Indexer", inputs);
+
+    if (!hasGamePiece()) {
+      linearActuator.setPosition(-0.9);
+    }
+
+    if (extended && hasGamePiece()) {
+      linearActuator.setPosition(0.9);
+    } else {
+      linearActuator.setPosition(-0.9);
+    }
   }
 }

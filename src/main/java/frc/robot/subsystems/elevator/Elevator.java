@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RBSISubsystem;
-import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -49,6 +48,8 @@ public class Elevator extends RBSISubsystem {
   // -- Limit Switch Stuff -- //
   private final DigitalInput limitSwitch = new DigitalInput(2);
   private final Debouncer limitDebouncer = new Debouncer(0.1);
+  @AutoLogOutput private boolean atDesiredPose = false;
+  @AutoLogOutput private ElevatorPosition selectedPose = ElevatorPosition.STOWED;
 
   // -- Position Handling -- //
   public enum ElevatorPosition {
@@ -99,7 +100,7 @@ public class Elevator extends RBSISubsystem {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    System.out.println(inputs.positionRad);
+    // System.out.println(inputs.positionRad);
     Logger.processInputs("Elevator", inputs);
     loggedLimitSwitch = limitSwitch.get();
 
@@ -131,6 +132,45 @@ public class Elevator extends RBSISubsystem {
       io.stop();
     } else {
       exceedsMaxCurrent = false;
+    }
+
+    if (elevatorDesiredPosition == ElevatorPosition.L3) {
+      if (inputs.positionRad > 79 && inputs.positionRad < 85) {
+        atDesiredPose = true;
+      } else {
+        atDesiredPose = false;
+      }
+    }
+    if (elevatorDesiredPosition == ElevatorPosition.L1) {
+      if (inputs.positionRad > 20 && inputs.positionRad < 30) {
+        atDesiredPose = true;
+      } else {
+        atDesiredPose = false;
+      }
+    }
+    if (elevatorDesiredPosition == ElevatorPosition.L2) {
+      if (inputs.positionRad > 45 && inputs.positionRad < 55) {
+        atDesiredPose = true;
+      } else {
+        atDesiredPose = false;
+      }
+    }
+    if (elevatorDesiredPosition == ElevatorPosition.L4) {
+      if (inputs.positionRad > 140 && inputs.positionRad < 145) {
+        atDesiredPose = true;
+      } else {
+        atDesiredPose = false;
+      }
+    }
+    if (elevatorDesiredPosition == ElevatorPosition.STOWED) {
+      if (inputs.positionRad > -5 && inputs.positionRad < 5) {
+        atDesiredPose = true;
+      } else {
+        atDesiredPose = false;
+      }
+    }
+    if (!homing) {
+      updatePosition();
     }
   }
 
@@ -168,8 +208,12 @@ public class Elevator extends RBSISubsystem {
     io.runPosition(position, 0);
   }
 
+  public boolean getAtDesiredPose() {
+    return atDesiredPose;
+  }
+
   // -- Default Method - Constantly Update Position -- //
-  public void updatePosition(DoubleSupplier manualVolts) {
+  public void updatePosition() {
     if (!homing && homed && !manualOverride && !exceedsMaxCurrent) {
       switch (elevatorDesiredPosition) {
         case STOWED:
@@ -178,25 +222,37 @@ public class Elevator extends RBSISubsystem {
           }
           break;
         case L4:
-          runPosition(138);
+          runPosition(150);
           break;
         case L3:
           runPosition(84);
           break;
         case L2:
-          runPosition(40);
+          runPosition(50);
           break;
         case L1:
           runPosition(25);
           break;
       }
     } else if (manualOverride && !exceedsMaxCurrent) {
-      runVolts(manualVolts.getAsDouble());
+      // runVolts(manualVolts.getAsDouble());
     }
   }
 
   public ElevatorPosition getDesiredPosition() {
     return elevatorDesiredPosition;
+  }
+
+  public void setSelectedPosition(ElevatorPosition pose) {
+    selectedPose = pose;
+  }
+
+  public ElevatorPosition getSelectedPosition() {
+    return selectedPose;
+  }
+
+  public void setHoming(boolean state) {
+    homing = state;
   }
 
   // -- Set the setpoint of the Elevator -- //

@@ -21,7 +21,5 @@ public class RunIndexerBackwordCommand extends Command {
   }
 
   @Override
-  public void end(boolean interrupted) {
-    indexer.stopLinearActuator();
-  }
+  public void end(boolean interrupted) {}
 }
