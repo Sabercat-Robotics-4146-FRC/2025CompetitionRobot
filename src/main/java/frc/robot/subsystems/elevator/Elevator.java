@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RBSISubsystem;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -49,7 +50,7 @@ public class Elevator extends RBSISubsystem {
   private final DigitalInput limitSwitch = new DigitalInput(2);
   private final Debouncer limitDebouncer = new Debouncer(0.1);
   @AutoLogOutput private boolean atDesiredPose = false;
-  @AutoLogOutput private ElevatorPosition selectedPose = ElevatorPosition.STOWED;
+  @AutoLogOutput private ElevatorPosition selectedPose = ElevatorPosition.L2;
 
   // -- Position Handling -- //
   public enum ElevatorPosition {
@@ -57,12 +58,22 @@ public class Elevator extends RBSISubsystem {
     L1,
     L2,
     L3,
-    L4
+    L4,
+    EXPLICIT
   }
+
+  public double heightL1 = 25.0;
+  public double heightL2 = 45.0;
+  public double heightL3 = 84.0;
+  public double heightL4 = 150.0;
+
+  private double explicitPosition = 5.0;
+
+  DoubleSupplier manualVolts;
 
   @AutoLogOutput private ElevatorPosition elevatorDesiredPosition = ElevatorPosition.STOWED;
 
-  public Elevator(ElevatorIO io) {
+  public Elevator(ElevatorIO io, DoubleSupplier manualVolts) {
     this.io = io;
     io.setPID(kP.get(), kI.get(), kD.get(), kG.get(), kV.get(), kA.get(), kS.get());
 
@@ -79,6 +90,8 @@ public class Elevator extends RBSISubsystem {
     sysId.quasistatic(SysIdRoutine.Direction.kReverse);
     sysId.dynamic(SysIdRoutine.Direction.kForward);
     sysId.dynamic(SysIdRoutine.Direction.kReverse);
+
+    this.manualVolts = manualVolts;
   }
 
   public Command getQuasiForward() {
@@ -135,28 +148,28 @@ public class Elevator extends RBSISubsystem {
     }
 
     if (elevatorDesiredPosition == ElevatorPosition.L3) {
-      if (inputs.positionRad > 79 && inputs.positionRad < 85) {
+      if (inputs.positionRad > heightL3 - 5 && inputs.positionRad < heightL3 + 5) {
         atDesiredPose = true;
       } else {
         atDesiredPose = false;
       }
     }
     if (elevatorDesiredPosition == ElevatorPosition.L1) {
-      if (inputs.positionRad > 20 && inputs.positionRad < 30) {
+      if (inputs.positionRad > heightL1 - 5 && inputs.positionRad < heightL1 + 5) {
         atDesiredPose = true;
       } else {
         atDesiredPose = false;
       }
     }
     if (elevatorDesiredPosition == ElevatorPosition.L2) {
-      if (inputs.positionRad > 45 && inputs.positionRad < 55) {
+      if (inputs.positionRad > heightL2 - 5 && inputs.positionRad < heightL2 + 5) {
         atDesiredPose = true;
       } else {
         atDesiredPose = false;
       }
     }
     if (elevatorDesiredPosition == ElevatorPosition.L4) {
-      if (inputs.positionRad > 140 && inputs.positionRad < 145) {
+      if (inputs.positionRad > heightL4 - 10 && inputs.positionRad < heightL4) {
         atDesiredPose = true;
       } else {
         atDesiredPose = false;
@@ -169,8 +182,16 @@ public class Elevator extends RBSISubsystem {
         atDesiredPose = false;
       }
     }
+    if (elevatorDesiredPosition == ElevatorPosition.EXPLICIT) {
+      if (inputs.positionRad > explicitPosition - 5 && inputs.positionRad < explicitPosition + 5) {
+        atDesiredPose = true;
+      } else {
+        atDesiredPose = false;
+      }
+    }
+
     if (!homing) {
-      updatePosition();
+      updatePosition(manualVolts);
     }
   }
 
@@ -181,6 +202,10 @@ public class Elevator extends RBSISubsystem {
   public void zeroPosition() {
     io.zeroPosition();
     System.out.println("Zeroed Position, new pose is: " + io.getPosition());
+  }
+
+  public boolean getManualOverride() {
+    return manualOverride;
   }
 
   public Command goHome() {
@@ -213,7 +238,7 @@ public class Elevator extends RBSISubsystem {
   }
 
   // -- Default Method - Constantly Update Position -- //
-  public void updatePosition() {
+  public void updatePosition(DoubleSupplier manualVolts) {
     if (!homing && homed && !manualOverride && !exceedsMaxCurrent) {
       switch (elevatorDesiredPosition) {
         case STOWED:
@@ -222,20 +247,23 @@ public class Elevator extends RBSISubsystem {
           }
           break;
         case L4:
-          runPosition(150);
+          runPosition(heightL4);
           break;
         case L3:
-          runPosition(84);
+          runPosition(heightL3);
           break;
         case L2:
-          runPosition(50);
+          runPosition(heightL2);
           break;
         case L1:
-          runPosition(25);
+          runPosition(heightL1);
+          break;
+        case EXPLICIT:
+          runPosition(explicitPosition);
           break;
       }
     } else if (manualOverride && !exceedsMaxCurrent) {
-      // runVolts(manualVolts.getAsDouble());
+      runVolts(manualVolts.getAsDouble());
     }
   }
 
@@ -260,10 +288,34 @@ public class Elevator extends RBSISubsystem {
     elevatorDesiredPosition = pose;
   }
 
+  public Double enumToPosition(ElevatorPosition e) {
+    if (e == ElevatorPosition.L1) {
+      return heightL1;
+    }
+    if (e == ElevatorPosition.L2) {
+      return heightL2;
+    }
+    if (e == ElevatorPosition.L3) {
+      return heightL3;
+    }
+    if (e == ElevatorPosition.L4) {
+      return heightL4;
+    }
+    if (e == ElevatorPosition.STOWED) {
+      return 0.0;
+    }
+
+    return 0.0;
+  }
+
   public void setBrakeMode(boolean enabled) {
     if (brakeModeEnabled == enabled) return;
     brakeModeEnabled = enabled;
     io.setBrakeMode(brakeModeEnabled);
+  }
+
+  public void setExplicitPosition(double position) {
+    explicitPosition = position;
   }
 
   public void setManualOverRide(boolean override) {

@@ -20,7 +20,6 @@ public class AlignNearestTag extends Command {
 
   @Override
   public void execute() {
-    System.out.println("Made it here");
     double shortestDistance = 1000;
     String shortestName = "";
     Supplier<Pose2d> shortestPose = () -> new Pose2d();

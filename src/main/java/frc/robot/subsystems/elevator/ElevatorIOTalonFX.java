@@ -82,8 +82,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     var motionMagicConfigs = config.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 30;
-    motionMagicConfigs.MotionMagicAcceleration = 30;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 80;
+    motionMagicConfigs.MotionMagicAcceleration = 70;
     PhoenixUtil.tryUntilOk(5, () -> leader.getConfigurator().apply(config, 0.25));
     // follower.setControl(new Follower(leader.getDeviceID(), true));
 

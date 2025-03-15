@@ -137,7 +137,7 @@ public final class Constants {
     // Theoretical free speed (m/s) at 12v applied output;
     // IMPORTANT: Follow the AdvantageKit instructions for measuring the ACTUAL maximum linear speed
     // of YOUR ROBOT, and replace the estimate here with your measured value!
-    public static final double kMaxLinearSpeed = Units.feetToMeters(30);
+    public static final double kMaxLinearSpeed = Units.feetToMeters(45);
 
     // Set 3/4 of a rotation per second as the max angular velocity (radians/sec)
     public static final double kMaxAngularSpeed = 1.5 * Math.PI;
@@ -195,7 +195,7 @@ public final class Constants {
     public static final double kIndexerGearRatio = 0;
 
     // indexer speed in voltage (run forward)
-    public static final double indexerVoltageOne = 2.5;
+    public static final double indexerVoltageOne = 1.8;
 
     // emergency indexer speed in voltage (run backword)
     public static final double indexerVoltageTwo = -2;
@@ -225,23 +225,72 @@ public final class Constants {
     }
 
     public static final DesiredPosition[] POSITIONS = {
+      // new DesiredPosition(
+      //     "SCORE_6",
+      //     new Pose2d(new Translation2d(13.3, 2.9), new Rotation2d(2.12))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_7",
+      //     new Pose2d(new Translation2d(13.8, 4.5), new Rotation2d(3.13))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_8",
+      //     new Pose2d(new Translation2d(13.7, 5.1), new Rotation2d(-2.09))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_9",
+      //     new Pose2d(new Translation2d(12.5, 5.3), new Rotation2d(-1.009))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_10",
+      //     new Pose2d(new Translation2d(13.3, 3.3), new Rotation2d(0.16))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_11",
+      //     new Pose2d(new Translation2d(12.5, 3.1), new Rotation2d(1.04))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_17",
+      //     new Pose2d(new Translation2d(4.07, 0.9), new Rotation2d(2.7))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_18",
+      //     new Pose2d(new Translation2d(3.7, 3.7), new Rotation2d(0.03))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_19",
+      //     new Pose2d(new Translation2d(4.2, 5.4), new Rotation2d(-1.01))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_20",
+      //     new Pose2d(new Translation2d(4.9, 4.8), new Rotation2d(-2.1))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_21",
+      //     new Pose2d(new Translation2d(4.7, 4.4), new Rotation2d(-3.1))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_22",
+      //     new Pose2d(new Translation2d(4.9, 2.7), new Rotation2d(2.1))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "FEEDER_1",
+      //     new Pose2d(new Translation2d(16.35, 1.44), new Rotation2d(2.23))
+      //         .transformBy(FieldOffsetCompensation.FEEDER)),
+      // new DesiredPosition(
+      //     "FEEDER_2",
+      //     new Pose2d(new Translation2d(16.27, 6.68), new Rotation2d(-0.67))
+      //         .transformBy(FieldOffsetCompensation.FEEDER)),
+      // new DesiredPosition(
+      //     "FEEDER_12",
+      //     new Pose2d(new Translation2d(1.89, 1.03), new Rotation2d(0.97))
+      //         .transformBy(FieldOffsetCompensation.FEEDER)),
+      // new DesiredPosition(
+      //     "FEEDER_13",
+      //     new Pose2d(new Translation2d(1.5, 6.7), new Rotation2d(-0.91))
+      //         .transformBy(FieldOffsetCompensation.FEEDER)),
       new DesiredPosition(
-          "SCORE_6",
-          new Pose2d(new Translation2d(13.75, 2.75), new Rotation2d(2))
-              .transformBy(FieldOffsetCompensation.REEF)),
-      new DesiredPosition(
-          "SCORE_7",
-          new Pose2d(new Translation2d(13.84, 4.26), new Rotation2d(-3.05))
-              .transformBy(FieldOffsetCompensation.REEF)),
-      new DesiredPosition(
-          "SCORE_11",
-          new Pose2d(new Translation2d(16.5, 1), new Rotation2d(2.3))
-              .transformBy(FieldOffsetCompensation.REEF)),
-      new DesiredPosition(
-          "FEEDER_1",
-          new Pose2d(new Translation2d(16.39, 1.55), new Rotation2d(2.25))
-              .transformBy(FieldOffsetCompensation.FEEDER)),
-      new DesiredPosition("TEST", new Pose2d(new Translation2d(13.75, 1.80), new Rotation2d(1.415)))
+          "TEST", new Pose2d(new Translation2d(13.655, 3.481), new Rotation2d(2.03)))
     };
   }
 

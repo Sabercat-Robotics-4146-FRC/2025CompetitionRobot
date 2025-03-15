@@ -76,7 +76,7 @@ public class Indexer extends RBSISubsystem {
     }
 
     if (extended && hasGamePiece()) {
-      linearActuator.setPosition(0.9);
+      linearActuator.setPosition(0.99);
     } else {
       linearActuator.setPosition(-0.9);
     }

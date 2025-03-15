@@ -27,6 +27,7 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -34,6 +35,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -41,8 +43,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.composition.AutoFeed;
 import frc.robot.commands.composition.Feed;
 import frc.robot.commands.composition.Score;
+import frc.robot.commands.composition.ScoreNoAlign;
 import frc.robot.commands.indexer.LinearActuatorExtendCommand;
 import frc.robot.commands.indexer.LinearActuatorRetractCommand;
 import frc.robot.commands.indexer.RunIndexerBackwordCommand;
@@ -95,9 +99,6 @@ public class RobotContainer {
   // Input estimated battery capacity (if full, use printed value)
   private final LoggedTunableNumber batteryCapacity =
       new LoggedTunableNumber("Battery Amp-Hours", 18.0);
-  // EXAMPLE TUNABLE FLYWHEEL SPEED INPUT FROM DASHBOARD
-  /*private final LoggedTunableNumber flywheelSpeedInput =
-  new LoggedTunableNumber("Flywheel Speed", 1500.0); */
 
   // Alerts
   private final Alert aprilTagLayoutAlert = new Alert("", AlertType.INFO);
@@ -114,7 +115,12 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         // YAGSL drivebase, get config from deploy directory
         m_drivebase = new Drive(this);
-        m_Elevator = new Elevator(new ElevatorIOTalonFX());
+        m_Elevator =
+            new Elevator(
+                new ElevatorIOTalonFX(),
+                () ->
+                    driverController.getLeftTriggerAxis() * 6
+                        - driverController.getRightTriggerAxis() * 6);
         m_vision =
             switch (Constants.getVisionType()) {
               case PHOTON ->
@@ -140,7 +146,12 @@ public class RobotContainer {
         // Sim robot, instantiate physics sim IO implementations
         m_drivebase = new Drive(this);
 
-        m_Elevator = new Elevator(new ElevatorIOTalonFX());
+        m_Elevator =
+            new Elevator(
+                new ElevatorIOTalonFX(),
+                () ->
+                    driverController.getLeftTriggerAxis() * 6
+                        - driverController.getRightTriggerAxis() * 6);
         m_vision =
             new Vision(
                 m_drivebase::addVisionMeasurement,
@@ -156,7 +167,12 @@ public class RobotContainer {
         // Replayed robot, disable IO implementations
         m_drivebase = new Drive(this);
 
-        m_Elevator = new Elevator(new ElevatorIOTalonFX());
+        m_Elevator =
+            new Elevator(
+                new ElevatorIOTalonFX(),
+                () ->
+                    driverController.getLeftTriggerAxis() * 6
+                        - driverController.getRightTriggerAxis() * 6);
         m_vision =
             new Vision(m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         m_accel = new Accelerometer(m_drivebase.getGyro());
@@ -164,12 +180,23 @@ public class RobotContainer {
         break;
     }
 
+    NamedCommands.registerCommand(
+        "Test",
+        Commands.runOnce(
+            () -> {
+              System.out.println("Running Command");
+            },
+            m_indexer));
+
+    NamedCommands.registerCommand("Score2", new ScoreNoAlign(m_Elevator, m_indexer, this));
+    NamedCommands.registerCommand("Score", new Score(m_Elevator, m_indexer, m_drivebase, this));
+    NamedCommands.registerCommand(
+        "AutoFeed", new AutoFeed(this, m_drivebase, m_indexer, m_Elevator));
+
     // In addition to the initial battery capacity from the Dashbaord, ``PowerMonitoring`` takes all
     // the non-drivebase subsystems for which you wish to have power monitoring; DO NOT include
     // ``m_drivebase``, as that is automatically monitored.
     m_power = new PowerMonitoring(batteryCapacity, m_indexer);
-
-    NamedCommands.registerCommand("Score", new Score(m_Elevator, m_indexer, m_drivebase, this));
 
     // Set up the SmartDashboard Auto Chooser based on auto type
     switch (Constants.getAutoType()) {
@@ -216,10 +243,7 @@ public class RobotContainer {
   }
 
   /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
-  private void defineAutoCommands() {
-
-    // NamedCommands.registerCommand("Zero", Commands.runOnce(() -> m_drivebase.zero()));
-  }
+  private void defineAutoCommands() {}
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
@@ -251,43 +275,28 @@ public class RobotContainer {
             () -> -driveStickX.value(),
             () -> -turnStickX.value()));
 
-    // ** Example Commands -- Remap, remove, or change as desired **
-    // Press B button while driving --> ROBOT-CENTRIC
-    // driverController
-    //     .b()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //             () ->
-    //                 DriveCommands.robotRelativeDrive(
-    //                     m_drivebase,
-    //                     () -> -driveStickY.value(),
-    //                     () -> -driveStickX.value(),
-    //                     () -> turnStickX.value()),
-    //             m_drivebase));
-
-    // Press A button -> BRAKE
-
-    // Press X button --> Stop with wheels in X-Lock position
-    // driverController.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
-
-    // Press Y button --> Manually Re-Zero the Gyro
-    // m_Elevator.setDefaultCommand(
-    //     Commands.runOnce(
-    //         () ->
-    //             m_Elevator.updatePosition(
-    //                 () ->
-    //                     driverController.getLeftTriggerAxis() * 6
-    //                         - driverController.getRightTriggerAxis() * 6),
-    //         m_Elevator));
     driverController
-        .y()
+        .povDown()
         .onTrue(
             Commands.runOnce(
                 () -> {
                   m_Elevator.setHoming(true);
                   m_Elevator.goHome().schedule();
                 }));
+
+    driverController.povLeft().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
+
     driverController
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  CommandScheduler.getInstance().cancelAll();
+                  m_drivebase.clearAutoAlignGoal();
+                  m_Elevator.goHome().schedule();
+                },
+                m_Elevator));
+    operatorController
         .a()
         .onTrue(
             Commands.runOnce(
@@ -295,7 +304,7 @@ public class RobotContainer {
                   m_Elevator.setSelectedPosition(ElevatorPosition.STOWED);
                 },
                 m_Elevator));
-    driverController
+    operatorController
         .povDown()
         .onTrue(
             Commands.runOnce(
@@ -303,7 +312,7 @@ public class RobotContainer {
                   m_Elevator.setSelectedPosition(ElevatorPosition.L1);
                 },
                 m_Elevator));
-    driverController
+    operatorController
         .povLeft()
         .onTrue(
             Commands.runOnce(
@@ -311,7 +320,7 @@ public class RobotContainer {
                   m_Elevator.setSelectedPosition(ElevatorPosition.L2);
                 },
                 m_Elevator));
-    driverController
+    operatorController
         .povRight()
         .onTrue(
             Commands.runOnce(
@@ -319,7 +328,7 @@ public class RobotContainer {
                   m_Elevator.setSelectedPosition(ElevatorPosition.L3);
                 },
                 m_Elevator));
-    driverController
+    operatorController
         .povUp()
         .onTrue(
             Commands.runOnce(
@@ -328,32 +337,39 @@ public class RobotContainer {
                 },
                 m_Elevator));
 
-    // driverController.povUp().whileTrue(m_Elevator.getDynamicForward());
-    // driverController.povDown().whileTrue(m_Elevator.getDynamicReverse());
-    // driverController.povLeft().whileTrue(m_Elevator.getQuasiForward());
-    // driverController.povRight().whileTrue(m_Elevator.getQuasiReverse());
+    driverController
+        .rightBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setManualOverRide(!m_Elevator.getManualOverride());
+                },
+                m_Elevator));
 
-    // driverController
-    //     .y()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //                 () -> {m_drivebase.resetPose((new
-    // Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())));}
-    //         ));
+    driverController
+        .y()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_drivebase.resetPose(
+                      (new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())));
+                }));
 
-    // .x().whileTrue(new ScoreL2(m_Elevator, m_indexer));
-    // driverController.x().onTrue(new AlignNearestTag(m_drivebase, this));
-    driverController.b().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
+    driverController.a().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
 
     driverController.x().onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this));
-    // driverController.x().whileFalse(new StopIndexerCommand(m_indexer));
-    driverController.leftBumper().whileTrue(new LinearActuatorExtendCommand(m_indexer));
-
-    // driverController.leftBumper().whileFalse(new StopLinearActuatorCommand(m_indexer));
-
-    driverController.rightBumper().whileTrue(new LinearActuatorRetractCommand(m_indexer));
-
-    // driverController.rightBumper().whileFalse(new StopLinearActuatorCommand(m_indexer));
+    driverController.povUp().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
+    driverController
+        .povRight()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setDesiredPosition(ElevatorPosition.L3);
+                },
+                m_Elevator));
+    // driverController.x().onTrue(new RunElevatorExplicit(m_Elevator, 80));
+    operatorController.b().whileTrue(new LinearActuatorExtendCommand(m_indexer));
+    operatorController.x().whileTrue(new LinearActuatorRetractCommand(m_indexer));
 
     // runs indexer backword
     operatorController.leftTrigger().whileTrue(new RunIndexerBackwordCommand(m_indexer));
