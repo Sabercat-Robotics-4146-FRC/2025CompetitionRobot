@@ -62,10 +62,10 @@ public class Elevator extends RBSISubsystem {
     EXPLICIT
   }
 
-  public double heightL1 = 25.0;
-  public double heightL2 = 45.0;
-  public double heightL3 = 84.0;
-  public double heightL4 = 150.0;
+  public double heightL1 = 20.0;
+  public double heightL2 = 40.0;
+  public double heightL3 = 79.0;
+  public double heightL4 = 146.0;
 
   private double explicitPosition = 5.0;
 
@@ -216,7 +216,7 @@ public class Elevator extends RBSISubsystem {
               homed = false;
             },
             this),
-        Commands.repeatingSequence(Commands.runOnce(() -> runVolts(-0.5)))
+        Commands.repeatingSequence(Commands.runOnce(() -> runVolts(-0.2)))
             .until(() -> limitSwitch.get())
             .andThen(
                 () -> {

@@ -44,6 +44,7 @@ import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.composition.AutoFeed;
+import frc.robot.commands.composition.AutoScore;
 import frc.robot.commands.composition.Feed;
 import frc.robot.commands.composition.Score;
 import frc.robot.commands.composition.ScoreNoAlign;
@@ -93,6 +94,8 @@ public class RobotContainer {
   /** Dashboard inputs ***************************************************** */
   // AutoChoosers for both supported path planning types
   private final LoggedDashboardChooser<Command> autoChooserPathPlanner;
+
+  private final LoggedDashboardChooser<ElevatorPosition> autoLevelChooser;
 
   private final AutoChooser autoChooserChoreo;
   private final AutoFactory autoFactoryChoreo;
@@ -189,7 +192,7 @@ public class RobotContainer {
             m_indexer));
 
     NamedCommands.registerCommand("Score2", new ScoreNoAlign(m_Elevator, m_indexer, this));
-    NamedCommands.registerCommand("Score", new Score(m_Elevator, m_indexer, m_drivebase, this));
+    NamedCommands.registerCommand("Score", new AutoScore(m_Elevator, m_indexer, m_drivebase, this));
     NamedCommands.registerCommand(
         "AutoFeed", new AutoFeed(this, m_drivebase, m_indexer, m_Elevator));
 
@@ -203,6 +206,9 @@ public class RobotContainer {
       case PATHPLANNER:
         autoChooserPathPlanner =
             new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+        autoLevelChooser = new LoggedDashboardChooser<>("Auto Level");
+        autoLevelChooser.addDefaultOption("L2", ElevatorPosition.L2);
+        autoLevelChooser.addOption("L4", ElevatorPosition.L4);
         // Set the others to null
         autoChooserChoreo = null;
         autoFactoryChoreo = null;
@@ -222,6 +228,9 @@ public class RobotContainer {
         autoChooserChoreo.addRoutine("twoPieceAuto", this::twoPieceAuto);
         // Set the others to null
         autoChooserPathPlanner = null;
+        autoLevelChooser = new LoggedDashboardChooser<>("Auto Level");
+        autoLevelChooser.addDefaultOption("L2", ElevatorPosition.L2);
+        autoLevelChooser.addOption("L4", ElevatorPosition.L4);
         break;
 
       default:
@@ -291,9 +300,7 @@ public class RobotContainer {
         .onTrue(
             Commands.runOnce(
                 () -> {
-                  CommandScheduler.getInstance().cancelAll();
-                  m_drivebase.clearAutoAlignGoal();
-                  m_Elevator.goHome().schedule();
+                  terminateAll();
                 },
                 m_Elevator));
     operatorController
@@ -383,6 +390,22 @@ public class RobotContainer {
   public Command getAutonomousCommandPathPlanner() {
     // Use the ``autoChooser`` to define your auto path from the SmartDashboard
     return autoChooserPathPlanner.get();
+  }
+
+  public ElevatorPosition getAutonomousScoreLevel() {
+    return autoLevelChooser.get();
+  }
+
+  public Elevator getElevator() {
+    return m_Elevator;
+  }
+
+  public void terminateAll() {
+    CommandScheduler.getInstance().cancelAll();
+    m_drivebase.clearAutoAlignGoal();
+    m_Elevator.goHome().schedule();
+    m_indexer.stopVoltage();
+    m_indexer.setExtended(false);
   }
 
   /**

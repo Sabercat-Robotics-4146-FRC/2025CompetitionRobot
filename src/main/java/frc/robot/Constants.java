@@ -137,7 +137,7 @@ public final class Constants {
     // Theoretical free speed (m/s) at 12v applied output;
     // IMPORTANT: Follow the AdvantageKit instructions for measuring the ACTUAL maximum linear speed
     // of YOUR ROBOT, and replace the estimate here with your measured value!
-    public static final double kMaxLinearSpeed = Units.feetToMeters(45);
+    public static final double kMaxLinearSpeed = Units.feetToMeters(60);
 
     // Set 3/4 of a rotation per second as the max angular velocity (radians/sec)
     public static final double kMaxAngularSpeed = 1.5 * Math.PI;
@@ -225,72 +225,75 @@ public final class Constants {
     }
 
     public static final DesiredPosition[] POSITIONS = {
-      // new DesiredPosition(
-      //     "SCORE_6",
-      //     new Pose2d(new Translation2d(13.3, 2.9), new Rotation2d(2.12))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_7",
-      //     new Pose2d(new Translation2d(13.8, 4.5), new Rotation2d(3.13))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_8",
-      //     new Pose2d(new Translation2d(13.7, 5.1), new Rotation2d(-2.09))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_9",
-      //     new Pose2d(new Translation2d(12.5, 5.3), new Rotation2d(-1.009))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_10",
-      //     new Pose2d(new Translation2d(13.3, 3.3), new Rotation2d(0.16))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_11",
-      //     new Pose2d(new Translation2d(12.5, 3.1), new Rotation2d(1.04))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_17",
-      //     new Pose2d(new Translation2d(4.07, 0.9), new Rotation2d(2.7))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_18",
-      //     new Pose2d(new Translation2d(3.7, 3.7), new Rotation2d(0.03))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_19",
-      //     new Pose2d(new Translation2d(4.2, 5.4), new Rotation2d(-1.01))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_20",
-      //     new Pose2d(new Translation2d(4.9, 4.8), new Rotation2d(-2.1))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_21",
-      //     new Pose2d(new Translation2d(4.7, 4.4), new Rotation2d(-3.1))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "SCORE_22",
-      //     new Pose2d(new Translation2d(4.9, 2.7), new Rotation2d(2.1))
-      //         .transformBy(FieldOffsetCompensation.REEF)),
-      // new DesiredPosition(
-      //     "FEEDER_1",
-      //     new Pose2d(new Translation2d(16.35, 1.44), new Rotation2d(2.23))
-      //         .transformBy(FieldOffsetCompensation.FEEDER)),
-      // new DesiredPosition(
-      //     "FEEDER_2",
-      //     new Pose2d(new Translation2d(16.27, 6.68), new Rotation2d(-0.67))
-      //         .transformBy(FieldOffsetCompensation.FEEDER)),
-      // new DesiredPosition(
-      //     "FEEDER_12",
-      //     new Pose2d(new Translation2d(1.89, 1.03), new Rotation2d(0.97))
-      //         .transformBy(FieldOffsetCompensation.FEEDER)),
-      // new DesiredPosition(
-      //     "FEEDER_13",
-      //     new Pose2d(new Translation2d(1.5, 6.7), new Rotation2d(-0.91))
-      //         .transformBy(FieldOffsetCompensation.FEEDER)),
       new DesiredPosition(
-          "TEST", new Pose2d(new Translation2d(13.655, 3.481), new Rotation2d(2.03)))
+          "SCORE_6",
+          new Pose2d(new Translation2d(13.76, 3.02), new Rotation2d(Units.degreesToRadians(124.49)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_7",
+          new Pose2d(
+                  new Translation2d(14.29, 4.15), new Rotation2d(Units.degreesToRadians(-175.23)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_8",
+          new Pose2d(
+                  new Translation2d(13.58, 5.14), new Rotation2d(Units.degreesToRadians(-118.74)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_9",
+          new Pose2d(new Translation2d(12.38, 5.05), new Rotation2d(Units.degreesToRadians(-59.71)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_10",
+          new Pose2d(new Translation2d(11.81, 3.96), new Rotation2d(Units.degreesToRadians(-1.6)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_11",
+          new Pose2d(new Translation2d(12.50, 2.91), new Rotation2d(Units.degreesToRadians(58.77)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_17",
+          new Pose2d(new Translation2d(3.93, 2.91), new Rotation2d(Units.degreesToRadians(58.77)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_18",
+          new Pose2d(new Translation2d(3.24, 3.96), new Rotation2d(Units.degreesToRadians(-1.6)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_19",
+          new Pose2d(new Translation2d(3.81, 5.05), new Rotation2d(Units.degreesToRadians(-59.71)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_20",
+          new Pose2d(new Translation2d(5.01, 5.14), new Rotation2d(Units.degreesToRadians(-118.74)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_21",
+          new Pose2d(new Translation2d(5.72, 4.15), new Rotation2d(Units.degreesToRadians(-175.23)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_22",
+          new Pose2d(new Translation2d(5.19, 3.02), new Rotation2d(Units.degreesToRadians(124.49)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "FEEDER_1",
+          new Pose2d(new Translation2d(16.48, 1.04), new Rotation2d(Units.degreesToRadians(130.23)))
+              .transformBy(FieldOffsetCompensation.FEEDER)),
+      new DesiredPosition(
+          "FEEDER_2",
+          new Pose2d(
+                  new Translation2d(16.33, 7.05), new Rotation2d(Units.degreesToRadians(-126.20)))
+              .transformBy(FieldOffsetCompensation.FEEDER)),
+      new DesiredPosition(
+          "FEEDER_12",
+          new Pose2d(new Translation2d(1.23, 1.00), new Rotation2d(Units.degreesToRadians(53.00)))
+              .transformBy(FieldOffsetCompensation.FEEDER)),
+      new DesiredPosition(
+          "FEEDER_13",
+          new Pose2d(new Translation2d(1.08, 6.97), new Rotation2d(Units.degreesToRadians(-49.66)))
+              .transformBy(FieldOffsetCompensation.FEEDER)),
+      // new DesiredPosition(
+      //     "TEST", new Pose2d(new Translation2d(13.655, 3.481), new Rotation2d(2.03)))
     };
   }
 
@@ -415,26 +418,26 @@ public final class Constants {
     // (ONLY USED FOR PHOTONVISION -- Limelight: configure in web UI instead)
     public static Transform3d robotToCamera1 =
         new Transform3d(
-            Units.inchesToMeters(-6.208),
-            Units.inchesToMeters(12.21),
-            Units.inchesToMeters(8.7),
-            new Rotation3d(0.0, 0.0, 0.0));
+            Units.inchesToMeters(10.977),
+            Units.inchesToMeters(15.503),
+            Units.inchesToMeters(10.288),
+            new Rotation3d(0.0, 0.0, -Math.PI / 4));
     public static Transform3d robotToCamera2 =
         new Transform3d(
-            Units.inchesToMeters(-15.052),
-            Units.inchesToMeters(9.5),
-            Units.inchesToMeters(36),
-            new Rotation3d(0.0, -0.436, Math.PI / 2));
+            Units.inchesToMeters(11.063),
+            Units.inchesToMeters(-9.437),
+            Units.inchesToMeters(10.288),
+            new Rotation3d(0.0, 0.0, Math.PI / 4));
     public static Transform3d robotToCamera3 =
         new Transform3d(
-            Units.inchesToMeters(-4.329),
-            Units.inchesToMeters(12.05),
+            Units.inchesToMeters(-14.05),
+            Units.inchesToMeters(4.329),
             Units.inchesToMeters(13.05),
             new Rotation3d(0, 0.0, -Math.PI / 2));
     public static Transform3d robotToCamera4 =
         new Transform3d(
-            Units.inchesToMeters(-8.979),
             Units.inchesToMeters(-12.21),
+            Units.inchesToMeters(8.0),
             Units.inchesToMeters(18.6),
             new Rotation3d(0.0, 0.0, Math.PI));
 

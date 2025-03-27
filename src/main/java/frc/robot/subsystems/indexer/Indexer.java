@@ -72,13 +72,13 @@ public class Indexer extends RBSISubsystem {
     Logger.processInputs("Indexer", inputs);
 
     if (!hasGamePiece()) {
-      linearActuator.setPosition(-0.9);
+      linearActuator.setPosition(-1);
     }
 
     if (extended && hasGamePiece()) {
-      linearActuator.setPosition(0.99);
+      linearActuator.setPosition(1);
     } else {
-      linearActuator.setPosition(-0.9);
+      linearActuator.setPosition(-1);
     }
   }
 }

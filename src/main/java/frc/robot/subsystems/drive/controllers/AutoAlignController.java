@@ -35,15 +35,16 @@ public class AutoAlignController {
   private static final LoggedTunableNumber thetakD =
       new LoggedTunableNumber("AutoAlign/thetakD", 0.08);
   private static final LoggedTunableNumber linearTolerance =
-      new LoggedTunableNumber("AutoAlign/controllerLinearTolerance", 0.08);
+      new LoggedTunableNumber("AutoAlign/controllerLinearTolerance", 0.02);
   private static final LoggedTunableNumber thetaTolerance =
       new LoggedTunableNumber("AutoAlign/controllerThetaTolerance", Units.degreesToRadians(2.0));
   private static final LoggedTunableNumber toleranceTime =
       new LoggedTunableNumber("AutoAlign/controllerToleranceSecs", 0.5);
   private static final LoggedTunableNumber maxLinearVelocity =
-      new LoggedTunableNumber("AutoAlign/maxLinearVelocity", DrivebaseConstants.kMaxLinearSpeed);
+      new LoggedTunableNumber(
+          "AutoAlign/maxLinearVelocity", DrivebaseConstants.kMaxLinearSpeed * 0.9);
   private static final LoggedTunableNumber maxLinearAcceleration =
-      new LoggedTunableNumber("AutoAlign/maxLinearAcceleration", 6 * 0.4);
+      new LoggedTunableNumber("AutoAlign/maxLinearAcceleration", 6 * 0.3);
   private static final LoggedTunableNumber maxAngularVelocity =
       new LoggedTunableNumber(
           "AutoAlign/maxAngularVelocity", DrivebaseConstants.kMaxAngularSpeed * 0.8);
@@ -90,11 +91,18 @@ public class AutoAlignController {
     // Set up both controllers
     linearController =
         new ProfiledPIDController(
-            linearkP.get(), 0, linearkD.get(), new TrapezoidProfile.Constraints(1, 1));
+            linearkP.get(),
+            0,
+            linearkD.get(),
+            new TrapezoidProfile.Constraints(maxLinearVelocity.get(), maxLinearAcceleration.get()));
     linearController.setTolerance(linearTolerance.get());
     thetaController =
         new ProfiledPIDController(
-            thetakP.get(), 0, thetakD.get(), new TrapezoidProfile.Constraints(1, 1));
+            thetakP.get(),
+            0,
+            thetakD.get(),
+            new TrapezoidProfile.Constraints(
+                maxAngularVelocity.get(), maxAngularAcceleration.get()));
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
     thetaController.setTolerance(thetaTolerance.get());
     toleranceTimer.restart();
