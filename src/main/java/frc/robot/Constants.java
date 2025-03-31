@@ -213,6 +213,8 @@ public final class Constants {
     public static final double kElevatorGearRatio = 1;
   }
 
+  public static final class SquidwardConstants {}
+
   public static final class RobotDesiredPositions {
     public static final class DesiredPosition {
       public String name;
@@ -501,6 +503,8 @@ public final class Constants {
 
     public static final RobotDeviceId ELEVATOR_LEADER = new RobotDeviceId(14, "Default Name", 16);
     public static final RobotDeviceId ELEVATOR_FOLLOWER = new RobotDeviceId(15, "Default Name", 17);
+
+    public static final RobotDeviceId SQUIDWARD_MOTOR = new RobotDeviceId(17, ", ", 19);
 
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined
