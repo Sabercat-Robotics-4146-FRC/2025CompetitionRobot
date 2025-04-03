@@ -228,54 +228,114 @@ public final class Constants {
 
     public static final DesiredPosition[] POSITIONS = {
       new DesiredPosition(
-          "SCORE_6",
+          "SCORE_6L",
           new Pose2d(new Translation2d(13.76, 3.02), new Rotation2d(Units.degreesToRadians(124.49)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_7",
+          "SCORE_7L",
           new Pose2d(
                   new Translation2d(14.29, 4.15), new Rotation2d(Units.degreesToRadians(-175.23)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_8",
+          "SCORE_8L",
           new Pose2d(
                   new Translation2d(13.58, 5.14), new Rotation2d(Units.degreesToRadians(-118.74)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_9",
+          "SCORE_9L",
           new Pose2d(new Translation2d(12.38, 5.05), new Rotation2d(Units.degreesToRadians(-59.71)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_10",
+          "SCORE_10L",
           new Pose2d(new Translation2d(11.81, 3.96), new Rotation2d(Units.degreesToRadians(-1.6)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_11",
+          "SCORE_11L",
           new Pose2d(new Translation2d(12.50, 2.91), new Rotation2d(Units.degreesToRadians(58.77)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_17",
+          "SCORE_17L",
           new Pose2d(new Translation2d(3.93, 2.91), new Rotation2d(Units.degreesToRadians(58.77)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_18",
+          "SCORE_18L",
           new Pose2d(new Translation2d(3.24, 3.96), new Rotation2d(Units.degreesToRadians(-1.6)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_19",
+          "SCORE_19L",
           new Pose2d(new Translation2d(3.81, 5.05), new Rotation2d(Units.degreesToRadians(-59.71)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_20",
+          "SCORE_20L",
           new Pose2d(new Translation2d(5.01, 5.14), new Rotation2d(Units.degreesToRadians(-118.74)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_21",
+          "SCORE_21L",
           new Pose2d(new Translation2d(5.72, 4.15), new Rotation2d(Units.degreesToRadians(-175.23)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
-          "SCORE_22",
+          "SCORE_22L",
           new Pose2d(new Translation2d(5.19, 3.02), new Rotation2d(Units.degreesToRadians(124.49)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      //   new DesiredPosition(
+      //     "SCORE_6R",
+      //     new Pose2d(new Translation2d(13.76, 3.02), new
+      // Rotation2d(Units.degreesToRadians(124.49)))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_7R",
+      //     new Pose2d(
+      //             new Translation2d(14.29, 4.15), new
+      // Rotation2d(Units.degreesToRadians(-175.23)))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_8R",
+      //     new Pose2d(
+      //             new Translation2d(13.58, 5.14), new
+      // Rotation2d(Units.degreesToRadians(-118.74)))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_9R",
+      //     new Pose2d(new Translation2d(12.38, 5.05), new
+      // Rotation2d(Units.degreesToRadians(-59.71)))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_10R",
+      //     new Pose2d(new Translation2d(11.81, 3.96), new
+      // Rotation2d(Units.degreesToRadians(-1.6)))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_11R",
+      //     new Pose2d(new Translation2d(12.50, 2.91), new
+      // Rotation2d(Units.degreesToRadians(58.77)))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_17R",
+      //     new Pose2d(new Translation2d(3.93, 2.91), new
+      // Rotation2d(Units.degreesToRadians(58.77)))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_18R",
+          new Pose2d(new Translation2d(3.22, 3.60), new Rotation2d(Units.degreesToRadians(-1.6)))
+              .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_19R",
+      //     new Pose2d(new Translation2d(3.81, 5.05), new
+      // Rotation2d(Units.degreesToRadians(-59.71)))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_20R",
+      //     new Pose2d(new Translation2d(5.01, 5.14), new
+      // Rotation2d(Units.degreesToRadians(-118.74)))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      // new DesiredPosition(
+      //     "SCORE_21R",
+      //     new Pose2d(new Translation2d(5.72, 4.15), new
+      // Rotation2d(Units.degreesToRadians(-175.23)))
+      //         .transformBy(FieldOffsetCompensation.REEF)),
+      new DesiredPosition(
+          "SCORE_22R",
+          new Pose2d(new Translation2d(5.52, 3.16), new Rotation2d(Units.degreesToRadians(124.49)))
               .transformBy(FieldOffsetCompensation.REEF)),
       new DesiredPosition(
           "FEEDER_1",
@@ -293,9 +353,7 @@ public final class Constants {
       new DesiredPosition(
           "FEEDER_13",
           new Pose2d(new Translation2d(1.08, 6.97), new Rotation2d(Units.degreesToRadians(-49.66)))
-              .transformBy(FieldOffsetCompensation.FEEDER)),
-      // new DesiredPosition(
-      //     "TEST", new Pose2d(new Translation2d(13.655, 3.481), new Rotation2d(2.03)))
+              .transformBy(FieldOffsetCompensation.FEEDER))
     };
   }
 
@@ -504,7 +562,7 @@ public final class Constants {
     public static final RobotDeviceId ELEVATOR_LEADER = new RobotDeviceId(14, "Default Name", 16);
     public static final RobotDeviceId ELEVATOR_FOLLOWER = new RobotDeviceId(15, "Default Name", 17);
 
-    public static final RobotDeviceId SQUIDWARD_MOTOR = new RobotDeviceId(17, ", ", 19);
+    public static final RobotDeviceId SQUIDWARD_MOTOR = new RobotDeviceId(23, "", 19);
 
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined

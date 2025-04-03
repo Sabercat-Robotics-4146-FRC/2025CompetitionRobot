@@ -28,6 +28,8 @@ public interface SquidwardIO {
 
   default void runPosition(double positionRad, double feedforward) {}
 
+  default void runPercent(double percent) {}
+
   default void setPID(
       double kP, double kI, double kD, double kG, double kV, double kA, double kS) {}
 

@@ -51,6 +51,7 @@ import frc.robot.commands.composition.ScoreNoAlign;
 import frc.robot.commands.indexer.LinearActuatorExtendCommand;
 import frc.robot.commands.indexer.LinearActuatorRetractCommand;
 import frc.robot.commands.indexer.RunIndexerBackwordCommand;
+import frc.robot.commands.squidward.ClearBottom;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -58,6 +59,8 @@ import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.indexer.Indexer;
 import frc.robot.subsystems.indexer.IndexerIOTalonFX;
+import frc.robot.subsystems.squidward.Squidward;
+import frc.robot.subsystems.squidward.SquidwardIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -90,6 +93,7 @@ public class RobotContainer {
   private final Elevator m_Elevator;
   private Twist2d robotVelocity = new Twist2d();
   private final Indexer m_indexer;
+  private final Squidward m_squid;
 
   /** Dashboard inputs ***************************************************** */
   // AutoChoosers for both supported path planning types
@@ -143,6 +147,7 @@ public class RobotContainer {
             };
         m_accel = new Accelerometer(m_drivebase.getGyro());
         m_indexer = new Indexer(new IndexerIOTalonFX());
+        m_squid = new Squidward(new SquidwardIOTalonFX(), () -> 0.0);
         break;
 
       case SIM:
@@ -164,6 +169,7 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(camera4Name, robotToCamera4, m_drivebase::getPose));
         m_accel = new Accelerometer(m_drivebase.getGyro());
         m_indexer = new Indexer(new IndexerIOTalonFX());
+        m_squid = new Squidward(new SquidwardIOTalonFX(), () -> 0.0);
         break;
 
       default:
@@ -180,6 +186,7 @@ public class RobotContainer {
             new Vision(m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         m_accel = new Accelerometer(m_drivebase.getGyro());
         m_indexer = new Indexer(new IndexerIOTalonFX());
+        m_squid = new Squidward(new SquidwardIOTalonFX(), () -> 0.0);
         break;
     }
 
@@ -366,14 +373,7 @@ public class RobotContainer {
 
     driverController.x().onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this));
     driverController.povUp().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
-    driverController
-        .povRight()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  m_Elevator.setDesiredPosition(ElevatorPosition.L3);
-                },
-                m_Elevator));
+    driverController.povRight().onTrue(new ClearBottom(m_squid, m_drivebase, this));
     // driverController.x().onTrue(new RunElevatorExplicit(m_Elevator, 80));
     operatorController.b().whileTrue(new LinearActuatorExtendCommand(m_indexer));
     operatorController.x().whileTrue(new LinearActuatorRetractCommand(m_indexer));

@@ -68,8 +68,8 @@ public class SquidwardIOTalonFX implements SquidwardIO {
     config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     var motionMagicConfigs = config.MotionMagic;
-    motionMagicConfigs.MotionMagicCruiseVelocity = 10;
-    motionMagicConfigs.MotionMagicAcceleration = 10;
+    motionMagicConfigs.MotionMagicCruiseVelocity = 120;
+    motionMagicConfigs.MotionMagicAcceleration = 300;
     PhoenixUtil.tryUntilOk(5, () -> leader.getConfigurator().apply(config, 0.25));
     // follower.setControl(new Follower(leader.getDeviceID(), true));
 
@@ -110,6 +110,11 @@ public class SquidwardIOTalonFX implements SquidwardIO {
   @Override
   public void runVolts(double volts) {
     leader.setControl(voltageRequest.withOutput(volts));
+  }
+
+  @Override
+  public void runPercent(double percent) {
+    leader.set(percent);
   }
 
   @Override

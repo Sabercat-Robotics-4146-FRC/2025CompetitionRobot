@@ -9,7 +9,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class Squidward extends RBSISubsystem {
   // -- PID & FeedForward values -- //
-  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Squidward/kP", 0.0);
+  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Squidward/kP", 1.0);
   private static final LoggedTunableNumber kD = new LoggedTunableNumber("Squidward/kD", 0.0);
   private static final LoggedTunableNumber kG = new LoggedTunableNumber("Squidward/kG", 0.0);
   private static final LoggedTunableNumber kV = new LoggedTunableNumber("Squidward/kV", 0.0);
@@ -55,6 +55,7 @@ public class Squidward extends RBSISubsystem {
     io.setPID(kP.get(), kI.get(), kD.get(), kG.get(), kV.get(), kA.get(), kS.get());
 
     this.manualVolts = manualVolts;
+    io.zeroPosition();
   }
 
   @Override
@@ -62,6 +63,7 @@ public class Squidward extends RBSISubsystem {
     io.updateInputs(inputs);
     // System.out.println(inputs.positionRad);
     Logger.processInputs("Squidward", inputs);
+    System.out.println(inputs.positionRad);
 
     motorDisconnectedAlert.set((!inputs.motorConnected));
 
@@ -76,7 +78,6 @@ public class Squidward extends RBSISubsystem {
       io.setPID(kP.get(), kI.get(), kD.get(), kG.get(), kV.get(), kA.get(), kS.get());
     }
 
-    // TODO: Soft Current limits to keep the robot from destroying itself
     if (inputs.currentAmps > maxSoftCurrent.get()) {
       System.out.println("Current Above Max for squidward");
       exceedsMaxCurrent = true;
@@ -84,12 +85,14 @@ public class Squidward extends RBSISubsystem {
     } else {
       exceedsMaxCurrent = false;
     }
-
-    updatePosition(manualVolts);
   }
 
   public void runVolts(double volts) {
     io.runVolts(volts);
+  }
+
+  public void runPercent(double percent) {
+    io.runPercent(percent);
   }
 
   public void zeroPosition() {
@@ -101,54 +104,12 @@ public class Squidward extends RBSISubsystem {
   }
 
   public void runPosition(double position) {
-    System.out.println(
-        "Setting Squid Position to:" + position + " Current Squid position: " + inputs.positionRad);
     io.runPosition(position, 0);
-  }
-
-  // -- Default Method - Constantly Update Position -- //
-  public void updatePosition(DoubleSupplier manualVolts) {
-    if (!manualOverride && !exceedsMaxCurrent) {
-      switch (armDesiredPosition) {
-        case STOWED:
-          runPosition(stowedPosition);
-          break;
-        case UPPER:
-          runPosition(UpperPosition);
-          break;
-        case LOWER:
-          runPosition(LowerPosition);
-          break;
-      }
-    } else if (manualOverride && !exceedsMaxCurrent) {
-      runVolts(manualVolts.getAsDouble());
-    }
-  }
-
-  public SquidwardPostition getDesiredPosition() {
-    return armDesiredPosition;
-  }
-
-  public void setSelectedPosition(SquidwardPostition pose) {
-    selectedPose = pose;
-  }
-
-  public SquidwardPostition getSelectedPosition() {
-    return selectedPose;
-  }
-
-  // -- Set the setpoint of the Elevator -- //
-  public void setDesiredPosition(SquidwardPostition pose) {
-    armDesiredPosition = pose;
   }
 
   public void setBrakeMode(boolean enabled) {
     if (brakeModeEnabled == enabled) return;
     brakeModeEnabled = enabled;
     io.setBrakeMode(brakeModeEnabled);
-  }
-
-  public void setManualOverRide(boolean override) {
-    manualOverride = override;
   }
 }
