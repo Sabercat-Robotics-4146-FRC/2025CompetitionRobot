@@ -1,6 +1,12 @@
 package frc.robot.subsystems.squidward;
 
+import static frc.robot.Constants.RobotDesiredPositions.RIGHT_REEFS;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Alert;
+import frc.robot.Constants.AlgaeLevel;
+import frc.robot.Constants.RobotDesiredPositions.DesiredPosition;
+import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.RBSISubsystem;
 import java.util.function.DoubleSupplier;
@@ -31,24 +37,8 @@ public class Squidward extends RBSISubsystem {
   @AutoLogOutput private boolean manualOverride = false;
 
   @AutoLogOutput private boolean exceedsMaxCurrent = false;
-
-  // -- Limit Switch Stuff -- //
-  @AutoLogOutput private SquidwardPostition selectedPose = SquidwardPostition.STOWED;
-
-  // -- Position Handling -- //
-  public enum SquidwardPostition {
-    STOWED,
-    UPPER,
-    LOWER
-  }
-
-  public double stowedPosition = 0.0;
-  public double UpperPosition = 40.0;
-  public double LowerPosition = 40.0;
-
   DoubleSupplier manualVolts;
-
-  @AutoLogOutput private SquidwardPostition armDesiredPosition = SquidwardPostition.STOWED;
+  Drive drive;
 
   public Squidward(SquidwardIO io, DoubleSupplier manualVolts) {
     this.io = io;
@@ -61,9 +51,7 @@ public class Squidward extends RBSISubsystem {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    // System.out.println(inputs.positionRad);
     Logger.processInputs("Squidward", inputs);
-    System.out.println(inputs.positionRad);
 
     motorDisconnectedAlert.set((!inputs.motorConnected));
 
@@ -111,5 +99,18 @@ public class Squidward extends RBSISubsystem {
     if (brakeModeEnabled == enabled) return;
     brakeModeEnabled = enabled;
     io.setBrakeMode(brakeModeEnabled);
+  }
+
+  public AlgaeLevel getNearestAlgaeLevel(Pose2d pose) {
+    double shortestDistance = 1000;
+    AlgaeLevel shortestLevel = null;
+    for (DesiredPosition reef : RIGHT_REEFS) {
+      double distance = pose.getTranslation().getDistance(reef.pose.getTranslation());
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        shortestLevel = reef.algaeLevel;
+      }
+    }
+    return shortestLevel;
   }
 }

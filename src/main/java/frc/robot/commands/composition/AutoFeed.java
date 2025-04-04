@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
-import frc.robot.commands.AlignNearestFeeder;
+import frc.robot.commands.alignment.AlignNearestFeeder;
 import frc.robot.commands.indexer.LinearActuatorRetractCommand;
 import frc.robot.commands.indexer.StopIndexerCommand;
 import frc.robot.subsystems.drive.Drive;

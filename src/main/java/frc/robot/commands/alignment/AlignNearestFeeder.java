@@ -1,30 +1,19 @@
-package frc.robot.commands;
+package frc.robot.commands.alignment;
 
 import static frc.robot.Constants.RobotDesiredPositions.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.RobotDesiredPositions.DesiredPosition;
-import frc.robot.FieldOffsetCompensation;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.Supplier;
 
-public class AlignNearestAlgae extends Command {
+public class AlignNearestFeeder extends Command {
   Drive drive;
   RobotContainer container;
 
-  public static final DesiredPosition[] FEEDERS = {
-    new DesiredPosition(
-        "SCORE_22R",
-        new Pose2d(new Translation2d(5.52, 3.16), new Rotation2d(Units.degreesToRadians(124.49)))
-            .transformBy(FieldOffsetCompensation.REEF)),
-  };
-
-  public AlignNearestAlgae(Drive drive, RobotContainer container) {
+  public AlignNearestFeeder(Drive drive, RobotContainer container) {
     this.drive = drive;
     this.container = container;
   }
