@@ -9,11 +9,11 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import java.util.function.Supplier;
 
-public class AlignNearestFeeder extends Command {
+public class AlignNearestFeederTag extends Command {
   Drive drive;
   RobotContainer container;
 
-  public AlignNearestFeeder(Drive drive, RobotContainer container) {
+  public AlignNearestFeederTag(Drive drive, RobotContainer container) {
     this.drive = drive;
     this.container = container;
   }

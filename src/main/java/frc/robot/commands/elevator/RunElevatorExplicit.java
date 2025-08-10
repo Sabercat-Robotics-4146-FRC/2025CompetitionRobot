@@ -8,9 +8,9 @@ public class RunElevatorExplicit extends Command {
   Elevator elevator;
   double position;
 
-  public RunElevatorExplicit(Elevator elevator, double positon) {
+  public RunElevatorExplicit(Elevator elevator, double position) {
     this.elevator = elevator;
-    this.position = positon;
+    this.position = position;
     addRequirements(elevator);
   }
 

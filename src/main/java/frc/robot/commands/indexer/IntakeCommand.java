@@ -19,21 +19,19 @@ public class IntakeCommand extends Command {
 
   @Override
   public void execute() {
-    if (startingState == true) {
-      indexer.runVoltage(6);
-    } else {
+    if (startingState == false) {
       indexer.runVoltage(1.8);
-    }
+    };
+    
   }
 
   @Override
   public boolean isFinished() {
-    return indexer.hasGamePiece() != startingState;
+    return startingState != indexer.hasGamePiece();
   }
 
   @Override
   public void end(boolean interrupted) {
-    // Timer.delay(IndexerConstants.delayInSeconds);
     indexer.stopVoltage();
   }
 }
