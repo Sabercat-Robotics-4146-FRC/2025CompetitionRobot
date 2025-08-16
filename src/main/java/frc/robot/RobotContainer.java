@@ -51,7 +51,6 @@ import frc.robot.commands.composition.ClearAlgae;
 import frc.robot.commands.composition.Feed;
 import frc.robot.commands.composition.Score;
 import frc.robot.commands.composition.ScoreNoAlign;
-import frc.robot.commands.indexer.RunIndexerBackwordCommand;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -69,7 +68,6 @@ import frc.robot.util.Alert;
 import frc.robot.util.Alert.AlertType;
 import frc.robot.util.GetJoystickValue;
 import frc.robot.util.LoggedTunableNumber;
-import frc.robot.util.OverrideSwitches;
 import frc.robot.util.PowerMonitoring;
 import frc.robot.util.RBSIEnum;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -80,7 +78,7 @@ public class RobotContainer {
   final CommandXboxController driverController = new CommandXboxController(0); // Main Driver
   final CommandXboxController operatorController = new CommandXboxController(1); // Second Operator
 
-  //final OverrideSwitches overrides = new OverrideSwitches(2); // Console toggle switches
+  // final OverrideSwitches overrides = new OverrideSwitches(2); // Console toggle switches
 
   /** Declare the robot subsystems here ************************************ */
   // These are the "Active Subsystems" that the robot controlls
@@ -128,7 +126,7 @@ public class RobotContainer {
             new Elevator(
                 new ElevatorIOTalonFX(),
                 () ->
-                  driverController.getLeftTriggerAxis() * 6
+                    driverController.getLeftTriggerAxis() * 6
                         - driverController.getRightTriggerAxis() * 6);
         m_vision =
             switch (Constants.getVisionType()) {
@@ -194,13 +192,13 @@ public class RobotContainer {
         break;
     }
 
-
     NamedCommands.registerCommand("Score", new ScoreNoAlign(m_Elevator, m_indexer, this));
-    NamedCommands.registerCommand("ScoreLeft", new AutoScoreLeft(m_Elevator, m_indexer, m_drivebase, this));
+    NamedCommands.registerCommand(
+        "AutoScoreLeft", new AutoScoreLeft(m_Elevator, m_indexer, m_drivebase, this));
     NamedCommands.registerCommand(
         "AutoFeed", new AutoFeed(this, m_drivebase, m_indexer, m_Elevator));
-    NamedCommands.registerCommand("ScoreRight", new AutoScoreRight(m_Elevator, m_indexer, m_drivebase, this));
-    
+    NamedCommands.registerCommand(
+        "AutoScoreRight", new AutoScoreRight(m_Elevator, m_indexer, m_drivebase, this));
 
     // In addition to the initial battery capacity from the Dashbaord, ``PowerMonitoring`` takes all
     // the non-drivebase subsystems for which you wish to have power monitoring; DO NOT include
@@ -213,8 +211,8 @@ public class RobotContainer {
         autoChooserPathPlanner =
             new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
         autoLevelChooser = new LoggedDashboardChooser<>("Auto Level");
-        autoLevelChooser.addDefaultOption("L2", ElevatorPosition.L2);
-        autoLevelChooser.addOption("L4", ElevatorPosition.L4);
+        autoLevelChooser.addDefaultOption("L4", ElevatorPosition.L4);
+        autoLevelChooser.addOption("L2", ElevatorPosition.L2);
         // Set the others to null
         autoChooserChoreo = null;
         autoFactoryChoreo = null;
@@ -358,7 +356,6 @@ public class RobotContainer {
                 () -> {
                   scoreSide = ScoreSide.LEFT;
                 }));
-                
 
     operatorController
         .povUp()
@@ -392,8 +389,6 @@ public class RobotContainer {
                   m_Elevator.setSelectedPosition(ElevatorPosition.L3);
                 },
                 m_Elevator));
-
-    
   }
 
   /**

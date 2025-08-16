@@ -21,8 +21,8 @@ public class IntakeCommand extends Command {
   public void execute() {
     if (startingState == false) {
       indexer.runVoltage(1.8);
-    };
-    
+    }
+    ;
   }
 
   @Override

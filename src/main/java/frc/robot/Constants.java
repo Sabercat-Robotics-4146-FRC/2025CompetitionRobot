@@ -479,7 +479,7 @@ public final class Constants {
     // Camera names, must match names configured on coprocessor
     public static String camera1Name = "camera_1";
     public static String camera2Name = "camera_2";
-    // public static String camera3Name = "camera_3";
+    public static String camera3Name = "camera_3";
     // public static String camera4Name = "camera_4";
     // ... And more, if needed
 

@@ -1,14 +1,6 @@
-
-/* 
+/*
 package frc.robot.subsystems.drivesim;
 
-import com.ctre.phoenix6.hardware.core.CoreCANcoder;
-import com.ctre.phoenix6.sim.CANcoderSimState;
-
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 
 public class driveSim {
 
