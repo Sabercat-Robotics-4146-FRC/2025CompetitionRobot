@@ -27,7 +27,6 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -47,10 +46,9 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.composition.AutoFeed;
 import frc.robot.commands.composition.AutoScoreLeft;
 import frc.robot.commands.composition.AutoScoreRight;
-import frc.robot.commands.composition.ClearAlgae;
-import frc.robot.commands.composition.Feed;
-import frc.robot.commands.composition.Score;
 import frc.robot.commands.composition.ScoreNoAlign;
+import frc.robot.commands.elevator.RunElevatorCommand;
+import frc.robot.commands.indexer.ScoreCoral;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -288,10 +286,15 @@ public class RobotContainer {
             () -> -driveStickX.value(),
             () -> -turnStickX.value()));
 
+    // tester controller bindings
+    driverController.a().whileTrue(new RunElevatorCommand(m_Elevator));
+    driverController.a().whileFalse(m_Elevator.goHome());
+    driverController.x().onTrue(new ScoreCoral(m_indexer, m_Elevator));
+
     // --- DRIVER CONTROLLER BINDINGS --- //
 
-    driverController.a().onTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
-    driverController
+    // driverController.a().onTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
+    /*driverController
         .x()
         .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
     driverController
@@ -331,6 +334,7 @@ public class RobotContainer {
                   m_Elevator.setManualOverRide(!m_Elevator.getManualOverride());
                 },
                 m_Elevator));
+                */
 
     // --- OPERATOR CONTROLLER BINDINGS --- //
 

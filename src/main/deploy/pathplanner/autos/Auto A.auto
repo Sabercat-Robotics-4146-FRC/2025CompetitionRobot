@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "A to 22"
+            "pathName": "B to 20"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoScoreRight"
+            "name": "AutoScoreLeft"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "22 to Feed 12 (Niki)"
+            "pathName": "20 to Feed 13 "
           }
         },
         {
@@ -31,13 +31,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Feed 12 to 17"
+            "pathName": "Feed 13 to 19"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoScoreRight"
+            "name": "AutoScoreLeft"
           }
         }
       ]
