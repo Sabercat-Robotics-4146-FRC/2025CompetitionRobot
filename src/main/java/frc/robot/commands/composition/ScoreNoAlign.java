@@ -7,7 +7,6 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.elevator.RunElevatorCommand;
 import frc.robot.commands.elevator.RunElevatorExplicit;
 import frc.robot.commands.indexer.RunIndexer;
-import frc.robot.commands.indexer.ScoreCoral;
 import frc.robot.commands.indexer.StopIndexerCommand;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.indexer.Indexer;

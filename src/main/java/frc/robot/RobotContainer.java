@@ -49,13 +49,8 @@ import frc.robot.commands.composition.AutoScoreLeftL4;
 import frc.robot.commands.composition.AutoScoreRight;
 import frc.robot.commands.composition.AutoScoreRightL4;
 import frc.robot.commands.composition.Feed;
-import frc.robot.commands.composition.Score;
 import frc.robot.commands.composition.ScoreNoAlign;
 import frc.robot.commands.composition.ScoreNoAlignL4;
-import frc.robot.commands.elevator.RunElevatorCommand;
-import frc.robot.commands.indexer.RunIndexer;
-import frc.robot.commands.indexer.ScoreCoral;
-import frc.robot.commands.indexer.ScoreCoralL4;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -296,11 +291,10 @@ public class RobotContainer {
             () -> -driveStickX.value(),
             () -> -turnStickX.value()));
 
-
     // --- DRIVER CONTROLLER BINDINGS --- //
 
     driverController.a().onTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
-    driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this)); 
+    driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
     driverController.y().onTrue(new ScoreNoAlignL4(m_Elevator, m_indexer, this));
     /*driverController
         .x()
@@ -346,30 +340,30 @@ public class RobotContainer {
 
     // --- OPERATOR CONTROLLER BINDINGS --- //
 
-    /* 
-    operatorController
-        .a()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  m_Elevator.setSelectedPosition(ElevatorPosition.STOWED);
-                },
-                m_Elevator));
-    operatorController
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  scoreSide = ScoreSide.RIGHT;
-                }));
-    operatorController
-        .x()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  scoreSide = ScoreSide.LEFT;
-                }));
-*/
+    /*
+        operatorController
+            .a()
+            .onTrue(
+                Commands.runOnce(
+                    () -> {
+                      m_Elevator.setSelectedPosition(ElevatorPosition.STOWED);
+                    },
+                    m_Elevator));
+        operatorController
+            .b()
+            .onTrue(
+                Commands.runOnce(
+                    () -> {
+                      scoreSide = ScoreSide.RIGHT;
+                    }));
+        operatorController
+            .x()
+            .onTrue(
+                Commands.runOnce(
+                    () -> {
+                      scoreSide = ScoreSide.LEFT;
+                    }));
+    */
     driverController
         .povUp()
         .onTrue(

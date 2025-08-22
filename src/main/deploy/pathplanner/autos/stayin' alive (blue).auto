@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "linger"
+            "pathName": "Stayin' alive blue"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoScoreRight"
+            "name": "AutoScoreLeft"
           }
         }
       ]

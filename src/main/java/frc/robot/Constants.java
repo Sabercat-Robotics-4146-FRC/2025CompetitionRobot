@@ -350,7 +350,8 @@ public final class Constants {
           null),
       new DesiredPosition(
           "SCORE_20L",
-          new Pose2d(new Translation2d(5.266, 5.057), new Rotation2d(Units.degreesToRadians(-168.111)))
+          new Pose2d(
+                  new Translation2d(5.266, 5.057), new Rotation2d(Units.degreesToRadians(-168.111)))
               .transformBy(FieldOffsetCompensation.REEF),
           null),
       new DesiredPosition(
