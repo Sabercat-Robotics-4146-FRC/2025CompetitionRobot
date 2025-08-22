@@ -1,5 +1,7 @@
 package frc.robot.commands.composition;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -20,7 +22,8 @@ import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.subsystems.indexer.Indexer;
 
 public class Score extends SequentialCommandGroup {
-  public Score(Elevator elevator, Indexer indexer, Drive drive, RobotContainer container) {
+  public Score(Elevator elevator, Indexer indexer, Drive drive, RobotContainer container,
+  Supplier<ScoreSide> side) {
     addCommands(
       elevator.goHome(),
       new ConditionalCommand(
@@ -30,9 +33,9 @@ public class Score extends SequentialCommandGroup {
       new RunElevatorCommand(elevator),
       new WaitUntilCommand(() -> elevator.getAtDesiredPose()),
       new ConditionalCommand(
-        new ScoreCoral(indexer), 
         new ScoreCoralL4(indexer), 
-        () -> elevator.getSelectedPosition() == ElevatorPosition.L1 || ElevatorPosition.L2 || Elevator.L3),
+        new ScoreCoral(indexer), 
+        () -> elevator.getSelectedPosition() == ElevatorPosition.L4),
       new WaitCommand(1.5),
       new StopIndexerCommand(indexer),
       new RunElevatorExplicit(elevator, 100),
