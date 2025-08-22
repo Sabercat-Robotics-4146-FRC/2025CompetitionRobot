@@ -301,7 +301,6 @@ public class RobotContainer {
 
     driverController.a().onTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
     driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this)); 
-    driverController.b().onTrue(new RunIndexer(m_indexer));
     driverController.y().onTrue(new ScoreNoAlignL4(m_Elevator, m_indexer, this));
     /*driverController
         .x()

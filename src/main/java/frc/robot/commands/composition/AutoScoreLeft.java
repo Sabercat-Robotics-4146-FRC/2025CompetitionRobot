@@ -7,7 +7,9 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.alignment.AlignNearestLeftReef;
 import frc.robot.commands.elevator.RunElevatorCommand;
 import frc.robot.commands.elevator.RunElevatorExplicit;
+import frc.robot.commands.indexer.RunIndexer;
 import frc.robot.commands.indexer.ScoreCoralL4;
+import frc.robot.commands.indexer.StopIndexerCommand;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.indexer.Indexer;
@@ -20,7 +22,9 @@ public class AutoScoreLeft extends SequentialCommandGroup {
         new RunElevatorCommand(elevator),
         new WaitUntilCommand(() -> elevator.getAtDesiredPose()),
         new WaitCommand(0.2),
-        new ScoreCoralL4(indexer),
+        new RunIndexer(indexer, 2.0, 0.9),
+        new WaitCommand(1.5),
+        new StopIndexerCommand(indexer),
         new RunElevatorExplicit(elevator, 100),
         new WaitCommand(0.2),
         new RunElevatorExplicit(elevator, 0.5),
