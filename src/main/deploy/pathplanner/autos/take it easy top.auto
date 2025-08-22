@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Middle to 21"
+            "pathName": "take it easy (top)"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoScoreRight"
+            "name": "AutoScoreLeft"
           }
         }
       ]

@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "come as you are"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScoreRight"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "come as you are part 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoFeed"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "come as you are part 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScoreLeft"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

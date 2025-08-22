@@ -45,10 +45,17 @@ import frc.robot.Constants.ScoreSide;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.composition.AutoFeed;
 import frc.robot.commands.composition.AutoScoreLeft;
+import frc.robot.commands.composition.AutoScoreLeftL4;
 import frc.robot.commands.composition.AutoScoreRight;
+import frc.robot.commands.composition.AutoScoreRightL4;
+import frc.robot.commands.composition.Feed;
+import frc.robot.commands.composition.Score;
 import frc.robot.commands.composition.ScoreNoAlign;
+import frc.robot.commands.composition.ScoreNoAlignL4;
 import frc.robot.commands.elevator.RunElevatorCommand;
+import frc.robot.commands.indexer.RunIndexer;
 import frc.robot.commands.indexer.ScoreCoral;
+import frc.robot.commands.indexer.ScoreCoralL4;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -197,7 +204,10 @@ public class RobotContainer {
         "AutoFeed", new AutoFeed(this, m_drivebase, m_indexer, m_Elevator));
     NamedCommands.registerCommand(
         "AutoScoreRight", new AutoScoreRight(m_Elevator, m_indexer, m_drivebase, this));
-
+    NamedCommands.registerCommand(
+        "AutoScoreRightL4", new AutoScoreRightL4(m_Elevator, m_indexer, m_drivebase, this));
+    NamedCommands.registerCommand(
+        "AutoScoreLeftL4", new AutoScoreLeftL4(m_Elevator, m_indexer, m_drivebase, this));
     // In addition to the initial battery capacity from the Dashbaord, ``PowerMonitoring`` takes all
     // the non-drivebase subsystems for which you wish to have power monitoring; DO NOT include
     // ``m_drivebase``, as that is automatically monitored.
@@ -209,8 +219,8 @@ public class RobotContainer {
         autoChooserPathPlanner =
             new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
         autoLevelChooser = new LoggedDashboardChooser<>("Auto Level");
-        autoLevelChooser.addDefaultOption("L4", ElevatorPosition.L4);
-        autoLevelChooser.addOption("L2", ElevatorPosition.L2);
+        autoLevelChooser.addDefaultOption("L2", ElevatorPosition.L2);
+        autoLevelChooser.addOption("L4", ElevatorPosition.L4);
         // Set the others to null
         autoChooserChoreo = null;
         autoFactoryChoreo = null;
@@ -286,14 +296,13 @@ public class RobotContainer {
             () -> -driveStickX.value(),
             () -> -turnStickX.value()));
 
-    // tester controller bindings
-    driverController.a().whileTrue(new RunElevatorCommand(m_Elevator));
-    driverController.a().whileFalse(m_Elevator.goHome());
-    driverController.x().onTrue(new ScoreCoral(m_indexer, m_Elevator));
 
     // --- DRIVER CONTROLLER BINDINGS --- //
 
-    // driverController.a().onTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
+    driverController.a().onTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
+    driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this)); 
+    driverController.b().onTrue(new RunIndexer(m_indexer));
+    driverController.y().onTrue(new ScoreNoAlignL4(m_Elevator, m_indexer, this));
     /*driverController
         .x()
         .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
@@ -338,6 +347,7 @@ public class RobotContainer {
 
     // --- OPERATOR CONTROLLER BINDINGS --- //
 
+    /* 
     operatorController
         .a()
         .onTrue(
@@ -360,8 +370,8 @@ public class RobotContainer {
                 () -> {
                   scoreSide = ScoreSide.LEFT;
                 }));
-
-    operatorController
+*/
+    driverController
         .povUp()
         .onTrue(
             Commands.runOnce(
@@ -369,7 +379,7 @@ public class RobotContainer {
                   m_Elevator.setSelectedPosition(ElevatorPosition.L4);
                 },
                 m_Elevator));
-    operatorController
+    driverController
         .povDown()
         .onTrue(
             Commands.runOnce(
@@ -377,7 +387,7 @@ public class RobotContainer {
                   m_Elevator.setSelectedPosition(ElevatorPosition.L1);
                 },
                 m_Elevator));
-    operatorController
+    driverController
         .povLeft()
         .onTrue(
             Commands.runOnce(
@@ -385,7 +395,7 @@ public class RobotContainer {
                   m_Elevator.setSelectedPosition(ElevatorPosition.L2);
                 },
                 m_Elevator));
-    operatorController
+    driverController
         .povRight()
         .onTrue(
             Commands.runOnce(

@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "blame it on the rain"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScoreLeft"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "blame it on the rain part 2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AutoScoreRight"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

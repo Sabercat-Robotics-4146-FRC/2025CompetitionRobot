@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "B to 20"
+            "pathName": "mystical magical"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoScoreLeft"
+            "name": "AutoScoreRightL4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "20 to Feed 13 "
+            "pathName": "mystical magical part 2"
           }
         },
         {
@@ -31,13 +31,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Feed 13 to 19"
+            "pathName": "mystical magical part 3"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoScoreLeft"
+            "name": "AutoScoreLeftL4"
           }
         }
       ]

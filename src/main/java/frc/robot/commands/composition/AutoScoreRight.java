@@ -16,11 +16,11 @@ public class AutoScoreRight extends SequentialCommandGroup {
   public AutoScoreRight(Elevator elevator, Indexer indexer, Drive drive, RobotContainer container) {
     addCommands(
         elevator.goHome(),
-        new AlignNearestRightReef(drive, container),
         new RunElevatorCommand(elevator),
+        new AlignNearestRightReef(drive, container),
         new WaitUntilCommand(() -> elevator.getAtDesiredPose()),
         new WaitCommand(0.2),
-        new ScoreCoral(indexer, elevator),
+        new ScoreCoral(indexer),
         new RunElevatorExplicit(elevator, 100),
         new WaitCommand(0.2),
         new RunElevatorExplicit(elevator, 0.5),
