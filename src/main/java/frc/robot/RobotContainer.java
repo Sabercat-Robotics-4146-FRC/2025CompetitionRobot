@@ -27,6 +27,8 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -48,6 +50,7 @@ import frc.robot.commands.composition.AutoScoreLeft;
 import frc.robot.commands.composition.AutoScoreLeftL4;
 import frc.robot.commands.composition.AutoScoreRight;
 import frc.robot.commands.composition.AutoScoreRightL4;
+import frc.robot.commands.composition.ClearAlgae;
 import frc.robot.commands.composition.Feed;
 import frc.robot.commands.composition.ScoreNoAlign;
 import frc.robot.commands.composition.ScoreNoAlignL4;
@@ -295,10 +298,10 @@ public class RobotContainer {
 
     driverController.a().onTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
     driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
-    driverController.y().onTrue(new ScoreNoAlignL4(m_Elevator, m_indexer, this));
     /*driverController
         .x()
         .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
+        */
     driverController
         .b()
         .onTrue(
@@ -307,36 +310,38 @@ public class RobotContainer {
                   terminateAll();
                 },
                 m_Elevator));
-    driverController.y().onTrue(new ClearAlgae(m_drivebase, this, m_squid));
+    driverController.leftBumper().onTrue(new ClearAlgae(m_drivebase, this, m_squid));
 
-    driverController.povUp().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
+    //driverController.rightBumper().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));//
     driverController
-        .povDown()
+        .rightBumper()
         .onTrue(
             Commands.runOnce(
                 () -> {
                   m_Elevator.setHoming(true);
                   m_Elevator.goHome().schedule();
                 }));
-    driverController.povLeft().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
+                
+    //driverController.povLeft().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));//
     driverController
-        .povRight()
+        .y()
         .onTrue(
             Commands.runOnce(
                 () -> {
                   m_drivebase.resetPose(
                       (new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())));
                 }));
+              
 
     driverController
-        .rightBumper()
+        .leftTrigger()
         .onTrue(
             Commands.runOnce(
                 () -> {
                   m_Elevator.setManualOverRide(!m_Elevator.getManualOverride());
                 },
                 m_Elevator));
-                */
+                
 
     // --- OPERATOR CONTROLLER BINDINGS --- //
 
