@@ -291,11 +291,9 @@ public class RobotContainer {
 
     driverController.a().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
     driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
-    driverController.y().onTrue(new Score(m_Elevator, m_indexer, m_drivebase, null, null));
-    /*driverController
-    .x()
+    driverController
+    .y()
     .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
-    */
     driverController
         .b()
         .onTrue(
@@ -305,8 +303,6 @@ public class RobotContainer {
                 },
                 m_Elevator));
     driverController.leftBumper().onTrue(new ClearAlgae(m_drivebase, this, m_squid));
-
-    // driverController.rightBumper().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));//
     driverController
         .rightBumper()
         .onTrue(
@@ -316,8 +312,24 @@ public class RobotContainer {
                   m_Elevator.goHome().schedule();
                 }));
 
-    // driverController.povLeft().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));//
     driverController
+                .leftTrigger()
+                .onTrue(
+                      Commands.runOnce(
+                        () -> {
+                          scoreSide = ScoreSide.RIGHT;
+                        }));
+    driverController
+                        .rightTrigger()
+                        .onTrue(
+                            Commands.runOnce(
+                                () -> {
+                                  scoreSide = ScoreSide.LEFT;
+                                }));
+        
+
+    // driverController.povLeft().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));//
+   /*driverController
         .y()
         .onTrue(
             Commands.runOnce(
@@ -334,34 +346,9 @@ public class RobotContainer {
                   m_Elevator.setManualOverRide(!m_Elevator.getManualOverride());
                 },
                 m_Elevator));
-
+*/
     // --- OPERATOR CONTROLLER BINDINGS --- //
-
-    /*
-        operatorController
-            .a()
-            .onTrue(
-                Commands.runOnce(
-                    () -> {
-                      m_Elevator.setSelectedPosition(ElevatorPosition.STOWED);
-                    },
-                    m_Elevator));
-        operatorController
-            .b()
-            .onTrue(
-                Commands.runOnce(
-                    () -> {
-                      scoreSide = ScoreSide.RIGHT;
-                    }));
-        operatorController
-            .x()
-            .onTrue(
-                Commands.runOnce(
-                    () -> {
-                      scoreSide = ScoreSide.LEFT;
-                    }));
-    */
-    driverController
+     driverController
         .povUp()
         .onTrue(
             Commands.runOnce(
