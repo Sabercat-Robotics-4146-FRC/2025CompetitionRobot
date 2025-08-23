@@ -20,7 +20,7 @@ public class AutoFeed extends SequentialCommandGroup {
         new AlignNearestFeederTag(drive, container),
         Commands.runOnce(
             () -> {
-              indexer.runVoltage(1.8, 0.95);
+              indexer.runVoltage(1.8);
             },
             indexer),
         new WaitUntilCommand(() -> indexer.hasGamePiece()),

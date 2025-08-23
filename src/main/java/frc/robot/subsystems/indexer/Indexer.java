@@ -35,9 +35,8 @@ public class Indexer extends RBSISubsystem {
   }
 
   // run indexer motor voltage (run forward)
-  public void runVoltage(double voltage, double speed) {
+  public void runVoltage(double voltage) {
     io.setVoltage(voltage);
-    io.setSpeed(speed);
   }
 
   // emergency indexer voltage (run backword)

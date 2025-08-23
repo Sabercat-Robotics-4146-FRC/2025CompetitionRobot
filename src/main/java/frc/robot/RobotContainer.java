@@ -27,7 +27,6 @@ import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -47,13 +46,11 @@ import frc.robot.Constants.ScoreSide;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.composition.AutoFeed;
 import frc.robot.commands.composition.AutoScoreLeft;
-import frc.robot.commands.composition.AutoScoreLeftL4;
 import frc.robot.commands.composition.AutoScoreRight;
-import frc.robot.commands.composition.AutoScoreRightL4;
 import frc.robot.commands.composition.ClearAlgae;
 import frc.robot.commands.composition.Feed;
+import frc.robot.commands.composition.Score;
 import frc.robot.commands.composition.ScoreNoAlign;
-import frc.robot.commands.composition.ScoreNoAlignL4;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -202,10 +199,6 @@ public class RobotContainer {
         "AutoFeed", new AutoFeed(this, m_drivebase, m_indexer, m_Elevator));
     NamedCommands.registerCommand(
         "AutoScoreRight", new AutoScoreRight(m_Elevator, m_indexer, m_drivebase, this));
-    NamedCommands.registerCommand(
-        "AutoScoreRightL4", new AutoScoreRightL4(m_Elevator, m_indexer, m_drivebase, this));
-    NamedCommands.registerCommand(
-        "AutoScoreLeftL4", new AutoScoreLeftL4(m_Elevator, m_indexer, m_drivebase, this));
     // In addition to the initial battery capacity from the Dashbaord, ``PowerMonitoring`` takes all
     // the non-drivebase subsystems for which you wish to have power monitoring; DO NOT include
     // ``m_drivebase``, as that is automatically monitored.
@@ -296,12 +289,13 @@ public class RobotContainer {
 
     // --- DRIVER CONTROLLER BINDINGS --- //
 
-    driverController.a().onTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
+    driverController.a().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
     driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
+    driverController.y().onTrue(new Score(m_Elevator, m_indexer, m_drivebase, null, null));
     /*driverController
-        .x()
-        .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
-        */
+    .x()
+    .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
+    */
     driverController
         .b()
         .onTrue(
@@ -312,7 +306,7 @@ public class RobotContainer {
                 m_Elevator));
     driverController.leftBumper().onTrue(new ClearAlgae(m_drivebase, this, m_squid));
 
-    //driverController.rightBumper().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));//
+    // driverController.rightBumper().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));//
     driverController
         .rightBumper()
         .onTrue(
@@ -321,8 +315,8 @@ public class RobotContainer {
                   m_Elevator.setHoming(true);
                   m_Elevator.goHome().schedule();
                 }));
-                
-    //driverController.povLeft().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));//
+
+    // driverController.povLeft().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));//
     driverController
         .y()
         .onTrue(
@@ -331,7 +325,6 @@ public class RobotContainer {
                   m_drivebase.resetPose(
                       (new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())));
                 }));
-              
 
     driverController
         .leftTrigger()
@@ -341,7 +334,6 @@ public class RobotContainer {
                   m_Elevator.setManualOverRide(!m_Elevator.getManualOverride());
                 },
                 m_Elevator));
-                
 
     // --- OPERATOR CONTROLLER BINDINGS --- //
 
