@@ -8,7 +8,6 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.alignment.AlignNearestRightReef;
 import frc.robot.commands.elevator.RunElevatorCommand;
 import frc.robot.commands.elevator.RunElevatorExplicit;
-import frc.robot.commands.indexer.RunIndexer;
 import frc.robot.commands.indexer.ScoreCoral;
 import frc.robot.commands.indexer.ScoreCoralL4;
 import frc.robot.commands.indexer.StopIndexerCommand;

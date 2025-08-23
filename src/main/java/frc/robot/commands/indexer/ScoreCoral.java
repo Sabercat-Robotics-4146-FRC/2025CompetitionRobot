@@ -12,7 +12,7 @@ public class ScoreCoral extends Command {
 
   @Override
   public void execute() {
-    indexer.runVoltage(2.5);
+    indexer.runVoltage(4);
   }
 
   @Override

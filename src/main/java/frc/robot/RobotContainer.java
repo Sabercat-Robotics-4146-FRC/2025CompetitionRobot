@@ -292,8 +292,8 @@ public class RobotContainer {
     driverController.a().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
     driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
     driverController
-    .y()
-    .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
+        .y()
+        .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
     driverController
         .b()
         .onTrue(
@@ -313,23 +313,22 @@ public class RobotContainer {
                 }));
 
     driverController
-                .leftTrigger()
-                .onTrue(
-                      Commands.runOnce(
-                        () -> {
-                          scoreSide = ScoreSide.RIGHT;
-                        }));
+        .leftTrigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  scoreSide = ScoreSide.LEFT;
+                }));
     driverController
-                        .rightTrigger()
-                        .onTrue(
-                            Commands.runOnce(
-                                () -> {
-                                  scoreSide = ScoreSide.LEFT;
-                                }));
-        
+        .rightTrigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  scoreSide = ScoreSide.RIGHT;
+                }));
 
     // driverController.povLeft().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));//
-   /*driverController
+    operatorController
         .y()
         .onTrue(
             Commands.runOnce(
@@ -338,17 +337,8 @@ public class RobotContainer {
                       (new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())));
                 }));
 
-    driverController
-        .leftTrigger()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  m_Elevator.setManualOverRide(!m_Elevator.getManualOverride());
-                },
-                m_Elevator));
-*/
     // --- OPERATOR CONTROLLER BINDINGS --- //
-     driverController
+    driverController
         .povUp()
         .onTrue(
             Commands.runOnce(

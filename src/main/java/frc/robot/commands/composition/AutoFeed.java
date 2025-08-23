@@ -16,11 +16,11 @@ public class AutoFeed extends SequentialCommandGroup {
   public AutoFeed(RobotContainer container, Drive drive, Indexer indexer, Elevator elevator) {
     addCommands(
         elevator.goHome(),
-        new LinearActuatorRetractCommand(indexer),
         new AlignNearestFeederTag(drive, container),
+        new LinearActuatorRetractCommand(indexer),
         Commands.runOnce(
             () -> {
-              indexer.runVoltage(1.8);
+              indexer.runVoltage(2);
             },
             indexer),
         new WaitUntilCommand(() -> indexer.hasGamePiece()),
