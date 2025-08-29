@@ -26,8 +26,8 @@ public class ScoreNoAlign extends SequentialCommandGroup {
             () -> elevator.getSelectedPosition() == ElevatorPosition.L4),
         new WaitCommand(1.5),
         new StopIndexerCommand(indexer),
-        /*new RunElevatorExplicit(elevator, 100),
-        new WaitCommand(0.05),*/
+        new RunElevatorExplicit(elevator, 100),
+        new WaitCommand(0.05),
         new RunElevatorExplicit(elevator, 0.5),
         elevator.goHome());
   }

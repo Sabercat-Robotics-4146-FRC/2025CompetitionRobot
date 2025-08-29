@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.alignment.AlignNearestLeftReef;
+import frc.robot.commands.alignment.AlignNearestLeftReefL4;
 import frc.robot.commands.elevator.RunElevatorCommand;
 import frc.robot.commands.elevator.RunElevatorExplicit;
 import frc.robot.commands.indexer.ScoreCoral;
@@ -20,7 +21,10 @@ public class AutoScoreLeft extends SequentialCommandGroup {
   public AutoScoreLeft(Elevator elevator, Indexer indexer, Drive drive, RobotContainer container) {
     addCommands(
         elevator.goHome(),
-        new AlignNearestLeftReef(drive, container),
+        new ConditionalCommand(
+          new AlignNearestLeftReefL4(drive, container), 
+          new AlignNearestLeftReef(drive, container), 
+          () -> elevator.getSelectedPosition() == ElevatorPosition.L4),
         new RunElevatorCommand(elevator),
         new WaitUntilCommand(() -> elevator.getAtDesiredPose()),
         new WaitCommand(0.2),

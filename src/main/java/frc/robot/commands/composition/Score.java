@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ScoreSide;
 import frc.robot.RobotContainer;
 import frc.robot.commands.alignment.AlignNearestLeftReef;
+import frc.robot.commands.alignment.AlignNearestLeftReefL4;
 import frc.robot.commands.alignment.AlignNearestRightReef;
+import frc.robot.commands.alignment.AlignNearestRightReefL4;
 import frc.robot.commands.elevator.RunElevatorCommand;
 import frc.robot.commands.elevator.RunElevatorExplicit;
 import frc.robot.commands.indexer.ScoreCoral;
@@ -29,8 +31,8 @@ public class Score extends SequentialCommandGroup {
     addCommands(
         elevator.goHome(),
         new ConditionalCommand(
-            new AlignNearestLeftReef(drive, container),
-            new AlignNearestRightReef(drive, container),
+            new AlignNearestLeftReefL4(drive, container),
+            new AlignNearestRightReefL4(drive, container),
             () -> side.get() == ScoreSide.LEFT),
         new RunElevatorCommand(elevator),
         new WaitUntilCommand(() -> elevator.getAtDesiredPose()),

@@ -290,6 +290,7 @@ public class RobotContainer {
     // --- DRIVER CONTROLLER BINDINGS --- //
 
     driverController.a().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
+    // driverController.x().onTrue(new RunIndexer(m_indexer, 2, 0.9));
     driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
     driverController
         .y()
@@ -327,7 +328,7 @@ public class RobotContainer {
                   scoreSide = ScoreSide.RIGHT;
                 }));
 
-    // driverController.povLeft().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));//
+    operatorController.a().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase)); //
     operatorController
         .y()
         .onTrue(
@@ -336,7 +337,14 @@ public class RobotContainer {
                   m_drivebase.resetPose(
                       (new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())));
                 }));
-
+    operatorController
+        .x()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setManualOverRide(!m_Elevator.getManualOverride());
+                },
+                m_Elevator));
     // --- OPERATOR CONTROLLER BINDINGS --- //
     driverController
         .povUp()

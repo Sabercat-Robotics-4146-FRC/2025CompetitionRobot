@@ -20,7 +20,7 @@ public class IntakeCommand extends Command {
   @Override
   public void execute() {
     if (startingState == false) {
-      indexer.runVoltage(4);
+      indexer.runVoltage(3);
     } else {
       indexer.runVoltage(4.5);
     }
