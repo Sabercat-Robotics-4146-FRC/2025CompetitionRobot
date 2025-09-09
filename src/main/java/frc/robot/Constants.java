@@ -235,31 +235,28 @@ public final class Constants {
           null)
     };
 
-    public static final DesiredPosition[] RIGHT_REEFS_L4 ={
+    public static final DesiredPosition[] RIGHT_REEFS_L4 = {
       new DesiredPosition(
-        "SCORE_8R_L4", 
-        new Pose2d(
-                new Translation2d(13.64, 5.35), new Rotation2d(Units.degreesToRadians(-122.49)))
-            .transformBy(FieldOffsetCompensation.REEF),
-        AlgaeLevel.BOTTOM),
-        new DesiredPosition(
-          "SCORE_9R_L4", 
+          "SCORE_8R_L4",
           new Pose2d(
-                  new Translation2d(12.17, 5.20), new Rotation2d(Units.degreesToRadians(-61.25)))
+                  new Translation2d(13.64, 5.35), new Rotation2d(Units.degreesToRadians(-122.49)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.BOTTOM),
-
-
+      new DesiredPosition(
+          "SCORE_9R_L4",
+          new Pose2d(new Translation2d(12.17, 5.20), new Rotation2d(Units.degreesToRadians(-61.25)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
     };
     public static final DesiredPosition[] RIGHT_REEFS = {
       new DesiredPosition(
-          "SCORE_6R", 
+          "SCORE_6R",
           new Pose2d(
                   new Translation2d(13.791, 3.03), new Rotation2d(Units.degreesToRadians(121.08)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.BOTTOM),
       new DesiredPosition(
-          "SCORE_7R", 
+          "SCORE_7R",
           new Pose2d(new Translation2d(14.348, 4.139), new Rotation2d(Units.degreesToRadians(180)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.TOP),
@@ -275,45 +272,45 @@ public final class Constants {
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.TOP),
       new DesiredPosition(
-          "SCORE_10R", 
+          "SCORE_10R",
           new Pose2d(new Translation2d(11.789, 3.932), new Rotation2d(Units.degreesToRadians(0)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.BOTTOM),
       new DesiredPosition(
-          "SCORE_11R", 
+          "SCORE_11R",
           new Pose2d(
                   new Translation2d(12.532, 2.869), new Rotation2d(Units.degreesToRadians(59.931)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.TOP),
       new DesiredPosition(
-          "SCORE_17R", 
+          "SCORE_17R",
           new Pose2d(
                   new Translation2d(3.945, 2.848), new Rotation2d(Units.degreesToRadians(59.391)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.BOTTOM),
       new DesiredPosition(
-          "SCORE_18R", 
+          "SCORE_18R",
           new Pose2d(new Translation2d(3.202, 3.788), new Rotation2d(Units.degreesToRadians(0)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.TOP),
       new DesiredPosition(
-          "SCORE_19R", 
-          new Pose2d(new Translation2d(3.59, 4.97), new Rotation2d(Units.degreesToRadians(-59.8)))
+          "SCORE_19R", // changed
+          new Pose2d(new Translation2d(3.71, 5.07), new Rotation2d(Units.degreesToRadians(-62.10)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.BOTTOM),
       new DesiredPosition(
-          "SCORE_20R", 
+          "SCORE_20R",
           new Pose2d(
                   new Translation2d(5.048, 5.18), new Rotation2d(Units.degreesToRadians(-120.767)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.TOP),
       new DesiredPosition(
-          "SCORE_21R", 
+          "SCORE_21R",
           new Pose2d(new Translation2d(5.76, 4.21), new Rotation2d(Units.degreesToRadians(-179.87)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.BOTTOM),
       new DesiredPosition(
-          "SCORE_22R", 
+          "SCORE_22R",
           new Pose2d(
                   new Translation2d(5.328, 3.024), new Rotation2d(Units.degreesToRadians(120.256)))
               .transformBy(FieldOffsetCompensation.REEF),
@@ -321,27 +318,23 @@ public final class Constants {
     };
 
     public static final DesiredPosition[] LEFT_REEFS_L4 = {
-    new DesiredPosition(
-        "SCORE_8L_L4", // changed
-        new Pose2d(
-                new Translation2d(13.91, 5.18), new Rotation2d(Units.degreesToRadians(-120.45)))
-            .transformBy(FieldOffsetCompensation.REEF),
-        null),
-
-
-
-
+      new DesiredPosition(
+          "SCORE_8L_L4", // changed
+          new Pose2d(
+                  new Translation2d(13.91, 5.18), new Rotation2d(Units.degreesToRadians(-120.45)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
     };
 
     public static final DesiredPosition[] LEFT_REEFS = {
       new DesiredPosition(
-          "SCORE_6L", 
+          "SCORE_6L",
           new Pose2d(
                   new Translation2d(13.595, 2.890), new Rotation2d(Units.degreesToRadians(120.677)))
               .transformBy(FieldOffsetCompensation.REEF),
           null),
       new DesiredPosition(
-          "SCORE_7L", 
+          "SCORE_7L",
           new Pose2d(new Translation2d(14.338, 3.891), new Rotation2d(Units.degreesToRadians(180)))
               .transformBy(FieldOffsetCompensation.REEF),
           null),
@@ -358,43 +351,43 @@ public final class Constants {
               .transformBy(FieldOffsetCompensation.REEF),
           null),
       new DesiredPosition(
-          "SCORE_10L", 
+          "SCORE_10L",
           new Pose2d(new Translation2d(11.789, 4.221), new Rotation2d(Units.degreesToRadians(0)))
               .transformBy(FieldOffsetCompensation.REEF),
           null),
       new DesiredPosition(
-          "SCORE_11L", 
+          "SCORE_11L",
           new Pose2d(new Translation2d(12.32, 2.99), new Rotation2d(Units.degreesToRadians(62.08)))
               .transformBy(FieldOffsetCompensation.REEF),
           null),
       new DesiredPosition(
-          "SCORE_17L", 
+          "SCORE_17L",
           new Pose2d(new Translation2d(3.66, 3.014), new Rotation2d(Units.degreesToRadians(59.3)))
               .transformBy(FieldOffsetCompensation.REEF),
           null),
       new DesiredPosition(
-          "SCORE_18L", 
+          "SCORE_18L",
           new Pose2d(new Translation2d(3.192, 4.149), new Rotation2d(Units.degreesToRadians(0)))
               .transformBy(FieldOffsetCompensation.REEF),
           null),
       new DesiredPosition(
-          "SCORE_19L", 
-          new Pose2d(new Translation2d(4.01, 5.19), new Rotation2d(Units.degreesToRadians(-59.31)))
+          "SCORE_19L", // changed
+          new Pose2d(new Translation2d(3.93, 5.21), new Rotation2d(Units.degreesToRadians(-56.29)))
               .transformBy(FieldOffsetCompensation.REEF),
           null),
       new DesiredPosition(
-          "SCORE_20L", 
+          "SCORE_20L",
           new Pose2d(
                   new Translation2d(5.320, 5.014), new Rotation2d(Units.degreesToRadians(-119.09)))
               .transformBy(FieldOffsetCompensation.REEF),
           null),
       new DesiredPosition(
-          "SCORE_21L", 
+          "SCORE_21L",
           new Pose2d(new Translation2d(5.741, 3.819), new Rotation2d(Units.degreesToRadians(180)))
               .transformBy(FieldOffsetCompensation.REEF),
           null),
       new DesiredPosition(
-          "SCORE_22L", 
+          "SCORE_22L",
           new Pose2d(new Translation2d(5.02, 2.89), new Rotation2d(Units.degreesToRadians(120.89)))
               .transformBy(FieldOffsetCompensation.REEF),
           null)
