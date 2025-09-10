@@ -256,7 +256,7 @@ public final class Constants {
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.BOTTOM),
       new DesiredPosition(
-          "SCORE_7R", // changed
+          "SCORE_7R", // changed not sure tho
           new Pose2d(new Translation2d(14.35, 4.17), new Rotation2d(Units.degreesToRadians(178.32)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.TOP),
