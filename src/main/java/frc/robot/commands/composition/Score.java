@@ -6,14 +6,13 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ScoreSide;
 import frc.robot.RobotContainer;
-import frc.robot.commands.alignment.AlignNearestLeftReef;
-import frc.robot.commands.alignment.AlignNearestRightReef;
 import frc.robot.commands.elevator.RunElevatorCommand;
 import frc.robot.commands.elevator.RunElevatorExplicit;
 import frc.robot.commands.indexer.ScoreCoral;
-import frc.robot.commands.indexer.StopIndexerCommand;
+import frc.robot.commands.indexer.ScoreCoralL4;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
 import frc.robot.subsystems.indexer.Indexer;
 import java.util.function.Supplier;
 
@@ -27,14 +26,15 @@ public class Score extends SequentialCommandGroup {
     addCommands(
         elevator.goHome(),
         new ConditionalCommand(
-            new AlignNearestLeftReef(drive, container),
-            new AlignNearestRightReef(drive, container),
-            () -> side.get() == ScoreSide.LEFT),
+            new AlignNearestL4Reef(drive, container, side),
+            new AlignNearestReef(drive, container, side),
+            () -> elevator.getSelectedPosition() == ElevatorPosition.L4),
         new RunElevatorCommand(elevator),
         new WaitUntilCommand(() -> elevator.getAtDesiredPose()),
-        new ScoreCoral(indexer),
-        new WaitCommand(1.5),
-        new StopIndexerCommand(indexer),
+        new ConditionalCommand(
+            new ScoreCoralL4(indexer),
+            new ScoreCoral(indexer),
+            () -> elevator.getSelectedPosition() == ElevatorPosition.L4),
         new RunElevatorExplicit(elevator, 100),
         new WaitCommand(0.2),
         new RunElevatorExplicit(elevator, 0.0),
@@ -46,3 +46,7 @@ public class Score extends SequentialCommandGroup {
 new ScoreCoralL4(indexer),
 new ScoreCoral(indexer),
 () -> elevator.getSelectedPosition() == ElevatorPosition.L4),*/
+/*new WaitCommand(1.5),
+new StopIndexerCommand(indexer),*/
+
+// i changed the conditional command

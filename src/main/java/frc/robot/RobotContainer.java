@@ -303,9 +303,9 @@ public class RobotContainer {
                   terminateAll();
                 },
                 m_Elevator));
-    driverController.leftBumper().onTrue(new ClearAlgae(m_drivebase, this, m_squid));
+    driverController.leftTrigger().onTrue(new ClearAlgae(m_drivebase, this, m_squid));
     driverController
-        .rightBumper()
+        .rightTrigger()
         .onTrue(
             Commands.runOnce(
                 () -> {
@@ -314,14 +314,14 @@ public class RobotContainer {
                 }));
 
     driverController
-        .leftTrigger()
+        .leftBumper()
         .onTrue(
             Commands.runOnce(
                 () -> {
                   scoreSide = ScoreSide.LEFT;
                 }));
     driverController
-        .rightTrigger()
+        .rightBumper()
         .onTrue(
             Commands.runOnce(
                 () -> {

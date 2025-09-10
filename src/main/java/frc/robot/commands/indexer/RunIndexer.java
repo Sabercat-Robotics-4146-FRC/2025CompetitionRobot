@@ -8,15 +8,13 @@ public class RunIndexer extends Command {
   private double voltage;
   private double speed;
 
-  public RunIndexer(Indexer indexer, double voltage, double speed) {
+  public RunIndexer(Indexer indexer) {
     this.indexer = indexer;
-    this.voltage = voltage;
-    this.speed = speed;
   }
 
   @Override
   public void execute() {
-    indexer.runVoltage(voltage);
+    indexer.runVoltage(6);
   }
 
   @Override
