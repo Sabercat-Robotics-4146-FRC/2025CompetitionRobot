@@ -14,7 +14,7 @@ public class RunIndexer extends Command {
 
   @Override
   public void execute() {
-    indexer.runVoltage(6);
+    indexer.runVoltage(3);
   }
 
   @Override
