@@ -49,9 +49,9 @@ import frc.robot.commands.composition.AutoScoreLeft;
 import frc.robot.commands.composition.AutoScoreRight;
 import frc.robot.commands.composition.ClearAlgae;
 import frc.robot.commands.composition.Feed;
+import frc.robot.commands.composition.Score;
 import frc.robot.commands.composition.ScoreNoAlign;
 import frc.robot.commands.elevator.RunElevatorCommand;
-import frc.robot.commands.indexer.ScoreCoralL4;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -293,11 +293,11 @@ public class RobotContainer {
     driverController.a().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
     // driverController.x().onTrue(new RunIndexer(m_indexer, 2, 0.9));
     driverController.x().onTrue(new RunElevatorCommand(m_Elevator));
-    driverController.y().onTrue(new ScoreCoralL4(m_indexer));
+    // driverController.y().onTrue(new ScoreCoralL4(m_indexer));
     // driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
-    /*driverController
-    .y()
-    .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));*/
+    driverController
+        .y()
+        .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
     driverController
         .b()
         .onTrue(
