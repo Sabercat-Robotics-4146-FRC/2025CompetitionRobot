@@ -52,6 +52,7 @@ import frc.robot.commands.composition.Feed;
 import frc.robot.commands.composition.Score;
 import frc.robot.commands.composition.ScoreNoAlign;
 import frc.robot.commands.elevator.RunElevatorCommand;
+import frc.robot.commands.indexer.ScoreCoralL4;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -292,20 +293,20 @@ public class RobotContainer {
 
     driverController.a().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
     // driverController.x().onTrue(new RunIndexer(m_indexer, 2, 0.9));
-    driverController.x().onTrue(new RunElevatorCommand(m_Elevator));
-    // driverController.y().onTrue(new ScoreCoralL4(m_indexer));
-    // driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
+    driverController.b().onTrue(new RunElevatorCommand(m_Elevator));
+    driverController.rightBumper().onTrue(new ScoreCoralL4(m_indexer));
+    driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
     driverController
         .y()
         .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
-    driverController
-        .b()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  terminateAll();
-                },
-                m_Elevator));
+    /*  driverController
+    .b()
+    .onTrue(
+        Commands.runOnce(
+            () -> {
+              terminateAll();
+            },
+            m_Elevator));*/
     driverController.leftTrigger().onTrue(new ClearAlgae(m_drivebase, this, m_squid));
     driverController
         .rightTrigger()
@@ -323,13 +324,14 @@ public class RobotContainer {
                 () -> {
                   scoreSide = ScoreSide.LEFT;
                 }));
+    /*
     driverController
         .rightBumper()
         .onTrue(
             Commands.runOnce(
                 () -> {
                   scoreSide = ScoreSide.RIGHT;
-                }));
+                }));*/
 
     operatorController.a().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase)); //
     operatorController

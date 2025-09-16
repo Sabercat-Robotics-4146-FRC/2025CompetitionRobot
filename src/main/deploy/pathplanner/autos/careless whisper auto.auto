@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "stayin' alive red"
+            "pathName": "careless whisper"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "AutoScoreLeft"
+            "name": "AutoScoreLeftL4"
           }
         }
       ]

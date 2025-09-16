@@ -271,6 +271,31 @@ public final class Constants {
           new Pose2d(new Translation2d(12.21, 5.09), new Rotation2d(Units.degreesToRadians(-61.03)))
               .transformBy(FieldOffsetCompensation.REEF),
           AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+          "SCORE_21R_L4",
+          new Pose2d(new Translation2d(5.85, 4.23), new Rotation2d(Units.degreesToRadians(-178.90)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+          "SCORE_7R_L4",
+          new Pose2d(new Translation2d(14.41, 4.21), new Rotation2d(Units.degreesToRadians(179.34)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+          "SCORE_20R_L4",
+          new Pose2d(new Translation2d(5.01, 5.28), new Rotation2d(Units.degreesToRadians(-120.67)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+          "SCORE_8R_L4",
+          new Pose2d(new Translation2d(13.55, 5.28), new Rotation2d(Units.degreesToRadians(-121.20)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+            "SCORE_17R_L4",
+            new Pose2d(new Translation2d(3.99, 2.78), new Rotation2d(Units.degreesToRadians(58.38)))
+                .transformBy(FieldOffsetCompensation.REEF),
+            AlgaeLevel.BOTTOM),
     };
     public static final DesiredPosition[] RIGHT_REEFS = {
       new DesiredPosition(
