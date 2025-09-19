@@ -292,31 +292,19 @@ public class RobotContainer {
     // --- DRIVER CONTROLLER BINDINGS --- //
 
     driverController.a().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
-    // driverController.x().onTrue(new RunIndexer(m_indexer, 2, 0.9));
-    driverController.b().onTrue(new RunElevatorCommand(m_Elevator));
-    driverController.rightBumper().onTrue(new ScoreCoralL4(m_indexer));
     driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
     driverController
         .y()
         .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
-    /*  driverController
+    driverController
     .b()
     .onTrue(
         Commands.runOnce(
             () -> {
               terminateAll();
             },
-            m_Elevator));*/
-    driverController.leftTrigger().onTrue(new ClearAlgae(m_drivebase, this, m_squid));
-    driverController
-        .rightTrigger()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  m_Elevator.setHoming(true);
-                  m_Elevator.goHome().schedule();
-                }));
-
+            m_Elevator));
+    driverController.back().onTrue(new ClearAlgae(m_drivebase, this, m_squid));
     driverController
         .leftBumper()
         .onTrue(
@@ -324,16 +312,58 @@ public class RobotContainer {
                 () -> {
                   scoreSide = ScoreSide.LEFT;
                 }));
-    /*
+
     driverController
         .rightBumper()
         .onTrue(
             Commands.runOnce(
                 () -> {
                   scoreSide = ScoreSide.RIGHT;
-                }));*/
+                }));
 
-    operatorController.a().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase)); //
+
+    driverController
+                .povUp()
+                .onTrue(
+                    Commands.runOnce(
+                        () -> {
+                          m_Elevator.setSelectedPosition(ElevatorPosition.L4);
+                        },
+                        m_Elevator));
+    driverController
+                .povDown()
+                .onTrue(
+                    Commands.runOnce(
+                        () -> {
+                          m_Elevator.setSelectedPosition(ElevatorPosition.L1);
+                        },
+                        m_Elevator));
+    driverController
+                .povLeft()
+                .onTrue(
+                    Commands.runOnce(
+                        () -> {
+                          m_Elevator.setSelectedPosition(ElevatorPosition.L2);
+                        },
+                        m_Elevator));
+    driverController
+                .povRight()
+                .onTrue(
+                    Commands.runOnce(
+                        () -> {
+                          m_Elevator.setSelectedPosition(ElevatorPosition.L3);
+                        },
+                        m_Elevator));
+// --- OPERATOR CONTROLLER BINDINGS --- //
+     /*driverController
+    .rightBumper()
+    .onTrue(
+        Commands.runOnce(
+            () -> {
+              m_Elevator.setHoming(true);
+              m_Elevator.goHome().schedule();
+            }));*/
+    operatorController.a().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
     operatorController
         .y()
         .onTrue(
@@ -350,39 +380,7 @@ public class RobotContainer {
                   m_Elevator.setManualOverRide(!m_Elevator.getManualOverride());
                 },
                 m_Elevator));
-    // --- OPERATOR CONTROLLER BINDINGS --- //
-    driverController
-        .povUp()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  m_Elevator.setSelectedPosition(ElevatorPosition.L4);
-                },
-                m_Elevator));
-    driverController
-        .povDown()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  m_Elevator.setSelectedPosition(ElevatorPosition.L1);
-                },
-                m_Elevator));
-    driverController
-        .povLeft()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  m_Elevator.setSelectedPosition(ElevatorPosition.L2);
-                },
-                m_Elevator));
-    driverController
-        .povRight()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  m_Elevator.setSelectedPosition(ElevatorPosition.L3);
-                },
-                m_Elevator));
+    
   }
 
   /**
