@@ -25,10 +25,7 @@ public class Score extends SequentialCommandGroup {
       Supplier<ScoreSide> side) {
     addCommands(
         elevator.goHome(),
-        new ConditionalCommand(
-            new AlignNearestL4Reef(drive, container, side),
-            new AlignNearestReef(drive, container, side),
-            () -> elevator.getSelectedPosition() == ElevatorPosition.L4),
+        new AlignNearestReef(drive, container, side),
         new RunElevatorCommand(elevator),
         new WaitUntilCommand(() -> elevator.getAtDesiredPose()),
         new ConditionalCommand(

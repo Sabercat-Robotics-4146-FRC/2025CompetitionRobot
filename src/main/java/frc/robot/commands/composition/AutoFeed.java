@@ -20,7 +20,7 @@ public class AutoFeed extends SequentialCommandGroup {
         new LinearActuatorRetractCommand(indexer),
         Commands.runOnce(
             () -> {
-              indexer.runVoltage(2);
+              indexer.runVoltage(3);
             },
             indexer),
         new WaitUntilCommand(() -> indexer.hasGamePiece()),

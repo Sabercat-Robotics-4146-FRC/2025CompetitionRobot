@@ -354,26 +354,30 @@ public class RobotContainer {
                           m_Elevator.setSelectedPosition(ElevatorPosition.L3);
                         },
                         m_Elevator));
+    driverController
+                .start()
+                .onTrue(
+                      Commands.runOnce(
+                         () -> {
+                            m_drivebase.resetPose(
+                            (new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())));
+                                }));
+
+
 // --- OPERATOR CONTROLLER BINDINGS --- //
-     /*driverController
-    .rightBumper()
-    .onTrue(
-        Commands.runOnce(
-            () -> {
-              m_Elevator.setHoming(true);
-              m_Elevator.goHome().schedule();
-            }));*/
-    operatorController.a().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
+  
+   operatorController
+   .a()
+   .onTrue(
+    Commands.runOnce(
+        () -> {
+          m_Elevator.setHoming(true);
+          m_Elevator.goHome().schedule();
+                }));
+
+    operatorController.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
     operatorController
         .y()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  m_drivebase.resetPose(
-                      (new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())));
-                }));
-    operatorController
-        .x()
         .onTrue(
             Commands.runOnce(
                 () -> {

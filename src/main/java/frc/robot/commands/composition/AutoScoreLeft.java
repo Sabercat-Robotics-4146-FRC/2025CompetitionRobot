@@ -21,10 +21,7 @@ public class AutoScoreLeft extends SequentialCommandGroup {
   public AutoScoreLeft(Elevator elevator, Indexer indexer, Drive drive, RobotContainer container) {
     addCommands(
         elevator.goHome(),
-        new ConditionalCommand(
-            new AlignNearestLeftReefL4(drive, container),
-            new AlignNearestLeftReef(drive, container),
-            () -> elevator.getSelectedPosition() == ElevatorPosition.L4),
+        new AlignNearestLeftReef(drive, container),
         new RunElevatorCommand(elevator),
         new WaitUntilCommand(() -> elevator.getAtDesiredPose()),
         new WaitCommand(0.2),
