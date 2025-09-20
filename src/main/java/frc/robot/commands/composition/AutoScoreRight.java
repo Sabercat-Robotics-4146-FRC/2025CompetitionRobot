@@ -21,6 +21,8 @@ public class AutoScoreRight extends SequentialCommandGroup {
     addCommands(
         elevator.goHome(),
         new AlignNearestRightReef(drive, container),
+        new WaitUntilCommand(()-> drive.atAutoAlignGoal()),
+        new WaitCommand(0.2),
         new RunElevatorCommand(elevator),
         new WaitUntilCommand(() -> elevator.getAtDesiredPose()),
         new WaitCommand(0.2),

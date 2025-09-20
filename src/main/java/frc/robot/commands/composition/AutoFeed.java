@@ -3,6 +3,7 @@ package frc.robot.commands.composition;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.alignment.AlignNearestFeederTag;
 import frc.robot.commands.indexer.LinearActuatorRetractCommand;
@@ -17,13 +18,14 @@ public class AutoFeed extends SequentialCommandGroup {
     addCommands(
         elevator.goHome(),
         new AlignNearestFeederTag(drive, container),
+        new WaitUntilCommand(()-> drive.atAutoAlignGoal()),
         new LinearActuatorRetractCommand(indexer),
         Commands.runOnce(
             () -> {
               indexer.runVoltage(2);
             },
             indexer),
-        new WaitCommand(0.06),
+        new WaitCommand(0.45),
         new StopIndexerCommand(indexer));
   }
 }
