@@ -65,7 +65,7 @@ public class Elevator extends RBSISubsystem {
   public double heightL1 = 20.0;
   public double heightL2 = 40.0;
   public double heightL3 = 79.0;
-  public double heightL4 = 146;
+  public double heightL4 = 147.5;
 
   private double explicitPosition = 5.0;
 

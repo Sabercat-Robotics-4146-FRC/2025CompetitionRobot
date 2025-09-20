@@ -214,13 +214,14 @@ public final class Constants {
     public static final DesiredPosition[] FEEDERS = {
       new DesiredPosition(
           "FEEDER_1",
-          new Pose2d(new Translation2d(16.48, 1.04), new Rotation2d(Units.degreesToRadians(130.23)))
+          new Pose2d(
+                  new Translation2d(16.503, .969), new Rotation2d(Units.degreesToRadians(125.362)))
               .transformBy(FieldOffsetCompensation.FEEDER),
           null),
       new DesiredPosition(
           "FEEDER_2",
           new Pose2d(
-                  new Translation2d(16.33, 7.05), new Rotation2d(Units.degreesToRadians(-126.20)))
+                  new Translation2d(16.423, 7.121), new Rotation2d(Units.degreesToRadians(-126.20)))
               .transformBy(FieldOffsetCompensation.FEEDER),
           null),
       new DesiredPosition(
@@ -230,7 +231,7 @@ public final class Constants {
           null),
       new DesiredPosition(
           "FEEDER_13",
-          new Pose2d(new Translation2d(1.08, 6.97), new Rotation2d(Units.degreesToRadians(-49.66)))
+          new Pose2d(new Translation2d(1.137, 6.97), new Rotation2d(Units.degreesToRadians(-49.66)))
               .transformBy(FieldOffsetCompensation.FEEDER),
           null)
     };

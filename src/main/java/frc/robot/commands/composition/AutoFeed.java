@@ -2,7 +2,7 @@ package frc.robot.commands.composition;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotContainer;
 import frc.robot.commands.alignment.AlignNearestFeederTag;
 import frc.robot.commands.indexer.LinearActuatorRetractCommand;
@@ -20,10 +20,10 @@ public class AutoFeed extends SequentialCommandGroup {
         new LinearActuatorRetractCommand(indexer),
         Commands.runOnce(
             () -> {
-              indexer.runVoltage(3);
+              indexer.runVoltage(2);
             },
             indexer),
-        new WaitUntilCommand(() -> indexer.hasGamePiece()),
+        new WaitCommand(0.06),
         new StopIndexerCommand(indexer));
   }
 }
