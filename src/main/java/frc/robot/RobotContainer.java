@@ -51,6 +51,7 @@ import frc.robot.commands.composition.ClearAlgae;
 import frc.robot.commands.composition.Feed;
 import frc.robot.commands.composition.Score;
 import frc.robot.commands.composition.ScoreNoAlign;
+import frc.robot.commands.elevator.RunElevatorCommand;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.elevator.Elevator;
@@ -291,7 +292,7 @@ public class RobotContainer {
 
     driverController.a().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
     driverController.x().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
-    // driverController.x().onTrue(new RunElevatorCommand(m_Elevator));
+    //driverController.x().onTrue(new RunElevatorCommand(m_Elevator));
     driverController
         .y()
         .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
