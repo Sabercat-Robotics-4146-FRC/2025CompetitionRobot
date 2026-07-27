@@ -1,9 +1,5 @@
-> [!NOTE]
-> Robot photos belong in `docs/images/`. Once added, uncomment the gallery in
-> [The Robot](#the-robot).
-
 # Sabercat Robotics, Team 4146
-## 2025 Competition Robot, *REEFSCAPE℠ presented by Haas*
+## 2025 Competition Robot, *REEFSCAPE*
 
 This repository contains the robot code for Team 4146's 2025 competition season.
 It is a Java command-based WPILib project built on
@@ -49,12 +45,11 @@ The robot consists of a swerve chassis, a coral scoring elevator, a roller
 indexer with a servo-driven retention gate, and a swinging algae-removal arm
 referred to throughout the code as **Squidward**.
 
-<!--
-| | |
-|---|---|
-| ![Front view](docs/images/robot-front.jpg) | ![Side view](docs/images/robot-side.jpg) |
-| ![Elevator detail](docs/images/robot-elevator.jpg) | ![Squidward](docs/images/robot-squidward.jpg) |
--->
+<p align="center">
+  <img src="docs/images/IMG_8110.JPG" alt="Competition robot, front three-quarter view" width="380">
+  &nbsp;
+  <img src="docs/images/IMG_8130.JPG" alt="Competition robot, side view" width="380">
+</p>
 
 | Element | Implementation |
 |---|---|
