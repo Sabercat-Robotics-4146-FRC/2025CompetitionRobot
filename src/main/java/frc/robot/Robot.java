@@ -146,6 +146,9 @@ public class Robot extends LoggedRobot {
     // TODO: Make sure Gyro inits here with whatever is in the path planning thingie
     switch (Constants.getAutoType()) {
       case PATHPLANNER:
+        m_robotContainer
+            .getElevator()
+            .setSelectedPosition(m_robotContainer.getAutonomousScoreLevel());
         m_autoCommandPathPlanner = m_robotContainer.getAutonomousCommandPathPlanner();
         // schedule the autonomous command
         if (m_autoCommandPathPlanner != null) {
@@ -177,6 +180,7 @@ public class Robot extends LoggedRobot {
     } else {
       CommandScheduler.getInstance().cancelAll();
     }
+    m_robotContainer.terminateAll();
     m_robotContainer.setMotorBrake(true);
   }
 

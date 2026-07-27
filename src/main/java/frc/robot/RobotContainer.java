@@ -26,27 +26,42 @@ import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AprilTagConstants.AprilTagLayoutType;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ScoreSide;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.composition.AutoFeed;
+import frc.robot.commands.composition.AutoScore;
+import frc.robot.commands.composition.ClearAlgae;
+import frc.robot.commands.composition.Feed;
+import frc.robot.commands.composition.Score;
+import frc.robot.commands.composition.ScoreNoAlign;
+import frc.robot.commands.indexer.RunIndexerBackwordCommand;
 import frc.robot.subsystems.accelerometer.Accelerometer;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.flywheel_example.Flywheel;
-import frc.robot.subsystems.flywheel_example.FlywheelIO;
-import frc.robot.subsystems.flywheel_example.FlywheelIOSim;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.Elevator.ElevatorPosition;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.indexer.Indexer;
+import frc.robot.subsystems.indexer.IndexerIOTalonFX;
+import frc.robot.subsystems.squidward.Squidward;
+import frc.robot.subsystems.squidward.SquidwardIOTalonFX;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.util.Alert;
@@ -56,43 +71,45 @@ import frc.robot.util.LoggedTunableNumber;
 import frc.robot.util.OverrideSwitches;
 import frc.robot.util.PowerMonitoring;
 import frc.robot.util.RBSIEnum;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /** This is the location for defining robot hardware, commands, and controller button bindings. */
 public class RobotContainer {
-
-  /** Define the Driver and, optionally, the Operator/Co-Driver Controllers */
-  // Replace with ``CommandPS4Controller`` or ``CommandJoystick`` if needed
   final CommandXboxController driverController = new CommandXboxController(0); // Main Driver
-
   final CommandXboxController operatorController = new CommandXboxController(1); // Second Operator
+
   final OverrideSwitches overrides = new OverrideSwitches(2); // Console toggle switches
 
   /** Declare the robot subsystems here ************************************ */
   // These are the "Active Subsystems" that the robot controlls
   private final Drive m_drivebase;
 
-  private final Flywheel m_flywheel;
   // These are "Virtual Subsystems" that report information but have no motors
   private final Accelerometer m_accel;
   private final Vision m_vision;
   private final PowerMonitoring m_power;
+  private final Elevator m_Elevator;
+  private Twist2d robotVelocity = new Twist2d();
+  private final Indexer m_indexer;
+  private final Squidward m_squid;
 
   /** Dashboard inputs ***************************************************** */
   // AutoChoosers for both supported path planning types
   private final LoggedDashboardChooser<Command> autoChooserPathPlanner;
+
+  private final LoggedDashboardChooser<ElevatorPosition> autoLevelChooser;
 
   private final AutoChooser autoChooserChoreo;
   private final AutoFactory autoFactoryChoreo;
   // Input estimated battery capacity (if full, use printed value)
   private final LoggedTunableNumber batteryCapacity =
       new LoggedTunableNumber("Battery Amp-Hours", 18.0);
-  // EXAMPLE TUNABLE FLYWHEEL SPEED INPUT FROM DASHBOARD
-  private final LoggedTunableNumber flywheelSpeedInput =
-      new LoggedTunableNumber("Flywheel Speed", 1500.0);
 
   // Alerts
   private final Alert aprilTagLayoutAlert = new Alert("", AlertType.INFO);
+
+  @AutoLogOutput private ScoreSide scoreSide = ScoreSide.RIGHT;
 
   /**
    * Constructor for the Robot Container. This container holds subsystems, opertator interface
@@ -105,60 +122,103 @@ public class RobotContainer {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         // YAGSL drivebase, get config from deploy directory
-        m_drivebase = new Drive();
-        m_flywheel = new Flywheel(new FlywheelIOSim()); // new Flywheel(new FlywheelIOTalonFX());
+        m_drivebase = new Drive(this);
+        m_Elevator =
+            new Elevator(
+                new ElevatorIOTalonFX(),
+                () ->
+                    driverController.getLeftTriggerAxis() * 6
+                        - driverController.getRightTriggerAxis() * 6);
         m_vision =
             switch (Constants.getVisionType()) {
               case PHOTON ->
                   new Vision(
                       m_drivebase::addVisionMeasurement,
-                      new VisionIOPhotonVision(camera0Name, robotToCamera0),
-                      new VisionIOPhotonVision(camera1Name, robotToCamera1));
+                      new VisionIOPhotonVision(camera1Name, robotToCamera1),
+                      new VisionIOPhotonVision(camera2Name, robotToCamera2)
+                      // new VisionIOPhotonVision(camera3Name, robotToCamera3),
+                      // new VisionIOPhotonVision(camera4Name, robotToCamera4)
+                      );
               case LIMELIGHT ->
                   new Vision(
-                      m_drivebase::addVisionMeasurement,
-                      new VisionIOLimelight(camera0Name, m_drivebase::getRotation),
-                      new VisionIOLimelight(camera1Name, m_drivebase::getRotation));
+                      m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
               case NONE ->
                   new Vision(
                       m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
               default -> null;
             };
         m_accel = new Accelerometer(m_drivebase.getGyro());
+        m_indexer = new Indexer(new IndexerIOTalonFX());
+        m_squid = new Squidward(new SquidwardIOTalonFX(), () -> 0.0);
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        m_drivebase = new Drive();
-        m_flywheel = new Flywheel(new FlywheelIOSim() {});
+        m_drivebase = new Drive(this);
+
+        m_Elevator =
+            new Elevator(
+                new ElevatorIOTalonFX(),
+                () ->
+                    driverController.getLeftTriggerAxis() * 6
+                        - driverController.getRightTriggerAxis() * 6);
         m_vision =
             new Vision(
                 m_drivebase::addVisionMeasurement,
-                new VisionIOPhotonVisionSim(camera0Name, robotToCamera0, m_drivebase::getPose),
-                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drivebase::getPose));
+                new VisionIOPhotonVisionSim(camera1Name, robotToCamera1, m_drivebase::getPose),
+                new VisionIOPhotonVisionSim(camera2Name, robotToCamera2, m_drivebase::getPose)
+                // new VisionIOPhotonVisionSim(camera3Name, robotToCamera3, m_drivebase::getPose),
+                // new VisionIOPhotonVisionSim(camera4Name, robotToCamera4, m_drivebase::getPose)
+                );
         m_accel = new Accelerometer(m_drivebase.getGyro());
+        m_indexer = new Indexer(new IndexerIOTalonFX());
+        m_squid = new Squidward(new SquidwardIOTalonFX(), () -> 0.0);
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        m_drivebase = new Drive();
-        m_flywheel = new Flywheel(new FlywheelIO() {});
+        m_drivebase = new Drive(this);
+
+        m_Elevator =
+            new Elevator(
+                new ElevatorIOTalonFX(),
+                () ->
+                    driverController.getLeftTriggerAxis() * 6
+                        - driverController.getRightTriggerAxis() * 6);
         m_vision =
             new Vision(m_drivebase::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
         m_accel = new Accelerometer(m_drivebase.getGyro());
+        m_indexer = new Indexer(new IndexerIOTalonFX());
+        m_squid = new Squidward(new SquidwardIOTalonFX(), () -> 0.0);
         break;
     }
+
+    NamedCommands.registerCommand(
+        "Test",
+        Commands.runOnce(
+            () -> {
+              System.out.println("Running Command");
+            },
+            m_indexer));
+
+    NamedCommands.registerCommand("Score2", new ScoreNoAlign(m_Elevator, m_indexer, this));
+    NamedCommands.registerCommand("Score", new AutoScore(m_Elevator, m_indexer, m_drivebase, this));
+    NamedCommands.registerCommand(
+        "AutoFeed", new AutoFeed(this, m_drivebase, m_indexer, m_Elevator));
 
     // In addition to the initial battery capacity from the Dashbaord, ``PowerMonitoring`` takes all
     // the non-drivebase subsystems for which you wish to have power monitoring; DO NOT include
     // ``m_drivebase``, as that is automatically monitored.
-    m_power = new PowerMonitoring(batteryCapacity, m_flywheel);
+    m_power = new PowerMonitoring(batteryCapacity, m_indexer);
 
     // Set up the SmartDashboard Auto Chooser based on auto type
     switch (Constants.getAutoType()) {
       case PATHPLANNER:
         autoChooserPathPlanner =
             new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+        autoLevelChooser = new LoggedDashboardChooser<>("Auto Level");
+        autoLevelChooser.addDefaultOption("L2", ElevatorPosition.L2);
+        autoLevelChooser.addOption("L4", ElevatorPosition.L4);
         // Set the others to null
         autoChooserChoreo = null;
         autoFactoryChoreo = null;
@@ -178,6 +238,9 @@ public class RobotContainer {
         autoChooserChoreo.addRoutine("twoPieceAuto", this::twoPieceAuto);
         // Set the others to null
         autoChooserPathPlanner = null;
+        autoLevelChooser = new LoggedDashboardChooser<>("Auto Level");
+        autoLevelChooser.addDefaultOption("L2", ElevatorPosition.L2);
+        autoLevelChooser.addOption("L4", ElevatorPosition.L4);
         break;
 
       default:
@@ -194,11 +257,12 @@ public class RobotContainer {
     configureBindings();
   }
 
-  /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
-  private void defineAutoCommands() {
-
-    // NamedCommands.registerCommand("Zero", Commands.runOnce(() -> m_drivebase.zero()));
+  public void addVelocityData(Twist2d robotVelocity) {
+    this.robotVelocity = robotVelocity;
   }
+
+  /** Use this method to define your Autonomous commands for use with PathPlanner / Choreo */
+  private void defineAutoCommands() {}
 
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
@@ -208,7 +272,7 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    // Send the proper joystick input based on driver preference -- Set this in `Constants.java`
+    // --- DRIVE BINDINGS --- //
     GetJoystickValue driveStickY;
     GetJoystickValue driveStickX;
     GetJoystickValue turnStickX;
@@ -222,7 +286,7 @@ public class RobotContainer {
       turnStickX = driverController::getLeftX;
     }
 
-    // SET STANDARD DRIVING AS DEFAULT COMMAND FOR THE DRIVEBASE
+    // --- SET STANDARD DRIVING AS DEFAULT COMMAND FOR THE DRIVEBASE --- //
     m_drivebase.setDefaultCommand(
         DriveCommands.fieldRelativeDrive(
             m_drivebase,
@@ -230,47 +294,109 @@ public class RobotContainer {
             () -> -driveStickX.value(),
             () -> -turnStickX.value()));
 
-    // ** Example Commands -- Remap, remove, or change as desired **
-    // Press B button while driving --> ROBOT-CENTRIC
+    // --- DRIVER CONTROLLER BINDINGS --- //
+
+    driverController.a().whileTrue(new Feed(this, m_drivebase, m_indexer, m_Elevator));
+    driverController
+        .x()
+        .onTrue(new Score(m_Elevator, m_indexer, m_drivebase, this, () -> scoreSide));
     driverController
         .b()
         .onTrue(
             Commands.runOnce(
-                () ->
-                    DriveCommands.robotRelativeDrive(
-                        m_drivebase,
-                        () -> -driveStickY.value(),
-                        () -> -driveStickX.value(),
-                        () -> turnStickX.value()),
-                m_drivebase));
+                () -> {
+                  terminateAll();
+                },
+                m_Elevator));
+    driverController.y().onTrue(new ClearAlgae(m_drivebase, this, m_squid));
 
-    // Press A button -> BRAKE
+    driverController.povUp().onTrue(new ScoreNoAlign(m_Elevator, m_indexer, this));
     driverController
-        .a()
-        .whileTrue(Commands.runOnce(() -> m_drivebase.setMotorBrake(true), m_drivebase));
-
-    // Press X button --> Stop with wheels in X-Lock position
-    driverController.x().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
-
-    // Press Y button --> Manually Re-Zero the Gyro
-    driverController
-        .y()
+        .povDown()
         .onTrue(
             Commands.runOnce(
-                    () ->
-                        m_drivebase.resetPose(
-                            new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())),
-                    m_drivebase)
-                .ignoringDisable(true));
+                () -> {
+                  m_Elevator.setHoming(true);
+                  m_Elevator.goHome().schedule();
+                }));
+    driverController.povLeft().onTrue(Commands.runOnce(m_drivebase::stopWithX, m_drivebase));
+    driverController
+        .povRight()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_drivebase.resetPose(
+                      (new Pose2d(m_drivebase.getPose().getTranslation(), new Rotation2d())));
+                }));
 
-    // Press RIGHT BUMPER --> Run the example flywheel
     driverController
         .rightBumper()
-        .whileTrue(
-            Commands.startEnd(
-                () -> m_flywheel.runVelocity(flywheelSpeedInput.get()),
-                m_flywheel::stop,
-                m_flywheel));
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setManualOverRide(!m_Elevator.getManualOverride());
+                },
+                m_Elevator));
+
+    // --- OPERATOR CONTROLLER BINDINGS --- //
+
+    operatorController
+        .a()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setSelectedPosition(ElevatorPosition.STOWED);
+                },
+                m_Elevator));
+    operatorController
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  scoreSide = ScoreSide.RIGHT;
+                }));
+    operatorController
+        .x()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  scoreSide = ScoreSide.LEFT;
+                }));
+
+    operatorController
+        .povUp()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setSelectedPosition(ElevatorPosition.L4);
+                },
+                m_Elevator));
+    operatorController
+        .povDown()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setSelectedPosition(ElevatorPosition.L1);
+                },
+                m_Elevator));
+    operatorController
+        .povLeft()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setSelectedPosition(ElevatorPosition.L2);
+                },
+                m_Elevator));
+    operatorController
+        .povRight()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  m_Elevator.setSelectedPosition(ElevatorPosition.L3);
+                },
+                m_Elevator));
+
+    operatorController.leftTrigger().whileTrue(new RunIndexerBackwordCommand(m_indexer));
   }
 
   /**
@@ -281,6 +407,27 @@ public class RobotContainer {
   public Command getAutonomousCommandPathPlanner() {
     // Use the ``autoChooser`` to define your auto path from the SmartDashboard
     return autoChooserPathPlanner.get();
+  }
+
+  public ElevatorPosition getAutonomousScoreLevel() {
+    return autoLevelChooser.get();
+  }
+
+  public Elevator getElevator() {
+    return m_Elevator;
+  }
+
+  public ScoreSide getScoreSide() {
+    return scoreSide;
+  }
+
+  public void terminateAll() {
+    CommandScheduler.getInstance().cancelAll();
+    m_drivebase.clearAutoAlignGoal();
+    m_Elevator.goHome().schedule();
+    m_indexer.stopVoltage();
+    m_indexer.setExtended(false);
+    m_squid.runPosition(0.0);
   }
 
   /**
@@ -299,6 +446,14 @@ public class RobotContainer {
   /** Set the motor neutral mode to BRAKE / COAST for T/F */
   public void setMotorBrake(boolean brake) {
     m_drivebase.setMotorBrake(brake);
+  }
+
+  @AutoLogOutput(key = "RobotState/FieldVelocity")
+  public Twist2d fieldVelocity(Rotation2d rotation) {
+    Translation2d linearFieldVelocity =
+        new Translation2d(robotVelocity.dx, robotVelocity.dy).rotateBy(rotation);
+    return new Twist2d(
+        linearFieldVelocity.getX(), linearFieldVelocity.getY(), robotVelocity.dtheta);
   }
 
   /** Updates the alerts. */
@@ -340,20 +495,6 @@ public class RobotContainer {
       autoChooserPathPlanner.addOption(
           "Drive SysId (Dynamic Reverse)",
           m_drivebase.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-      // Example Flywheel SysId Characterization
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Quasistatic Forward)",
-          m_flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Quasistatic Reverse)",
-          m_flywheel.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Dynamic Forward)",
-          m_flywheel.sysIdDynamic(SysIdRoutine.Direction.kForward));
-      autoChooserPathPlanner.addOption(
-          "Flywheel SysId (Dynamic Reverse)",
-          m_flywheel.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
   }
 

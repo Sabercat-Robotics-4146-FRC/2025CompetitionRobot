@@ -24,9 +24,11 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -83,6 +85,16 @@ public final class Constants {
     SIMBOT // Simulated robot
   }
 
+  public static enum ScoreSide {
+    LEFT,
+    RIGHT
+  }
+
+  public static enum AlgaeLevel {
+    TOP,
+    BOTTOM
+  }
+
   /** Checks whether the correct robot is selected when deploying. */
   public static void main(String... args) {
     if (robotType == RobotType.SIMBOT) {
@@ -104,7 +116,7 @@ public final class Constants {
   /** General Constants **************************************************** */
   public static final double loopPeriodSecs = 0.02;
 
-  public static final boolean tuningMode = false;
+  public static final boolean tuningMode = true;
 
   /** Physical Constants for Robot Operation ******************************* */
   public static final class PhysicalConstants {
@@ -136,12 +148,12 @@ public final class Constants {
     // IMPORTANT: Follow the AdvantageKit instructions for measuring the ACTUAL maximum linear speed
     // of YOUR ROBOT, and replace the estimate here with your measured value!
     public static final double kMaxLinearSpeed = Units.feetToMeters(18);
+    public static final double kMaxLinearSpeed = Units.feetToMeters(60);
 
     // Set 3/4 of a rotation per second as the max angular velocity (radians/sec)
     public static final double kMaxAngularSpeed = 1.5 * Math.PI;
 
     // Maximum chassis accelerations desired for robot motion  -- metric / radians
-    // TODO: Compute the maximum linear acceleration given the PHYSICS of the ROBOT!
     public static final double kMaxLinearAccel = 4.0; // m/s/s
     public static final double kMaxAngularAccel = Units.degreesToRadians(720);
 
@@ -183,6 +195,200 @@ public final class Constants {
     public static final double kVelocityGainSim = 0.03;
     // Feedback (PID) constants
     public static final PIDConstants pidSim = new PIDConstants(1.0, 0.0, 0.0);
+  }
+
+  public static final class IndexerConstants {
+
+    public static final MotorIdleMode kIndexerIdleMode = MotorIdleMode.COAST;
+    public static final double kIndexerGearRatio = 0;
+
+    // indexer speed in voltage (run forward)
+    public static final double indexerVoltageOne = 1.8;
+
+    // emergency indexer speed in voltage (run backword)
+    public static final double indexerVoltageTwo = -2;
+
+    // linear actuator speeds (between -1.0 and 1.0)
+    public static final double linearActuatorExtend = 1;
+    public static final double linearActuatorRetract = -1;
+
+    // delay time in seconds to stop voltage of indexer
+    public static final double delayInSeconds = 0.5;
+  }
+
+  public static final class ElevatorConstants {
+
+    public static final double kElevatorGearRatio = 1;
+  }
+
+  public static final class SquidwardConstants {}
+
+  public static final class RobotDesiredPositions {
+    public static final class DesiredPosition {
+      public String name;
+      public Pose2d pose;
+      public AlgaeLevel algaeLevel;
+
+      public DesiredPosition(String name, Pose2d pose, AlgaeLevel algaeLevel) {
+        this.name = name;
+        this.pose = pose;
+        this.algaeLevel = algaeLevel;
+      }
+    }
+
+    public static final DesiredPosition[] FEEDERS = {
+      new DesiredPosition(
+          "FEEDER_1",
+          new Pose2d(new Translation2d(16.48, 1.04), new Rotation2d(Units.degreesToRadians(130.23)))
+              .transformBy(FieldOffsetCompensation.FEEDER),
+          null),
+      new DesiredPosition(
+          "FEEDER_2",
+          new Pose2d(
+                  new Translation2d(16.33, 7.05), new Rotation2d(Units.degreesToRadians(-126.20)))
+              .transformBy(FieldOffsetCompensation.FEEDER),
+          null),
+      new DesiredPosition(
+          "FEEDER_12",
+          new Pose2d(new Translation2d(1.23, 1.00), new Rotation2d(Units.degreesToRadians(53.00)))
+              .transformBy(FieldOffsetCompensation.FEEDER),
+          null),
+      new DesiredPosition(
+          "FEEDER_13",
+          new Pose2d(new Translation2d(1.08, 6.97), new Rotation2d(Units.degreesToRadians(-49.66)))
+              .transformBy(FieldOffsetCompensation.FEEDER),
+          null)
+    };
+
+    public static final DesiredPosition[] RIGHT_REEFS = {
+      new DesiredPosition(
+          "SCORE_6R",
+          new Pose2d(new Translation2d(14.09, 3.16), new Rotation2d(Units.degreesToRadians(124.49)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+          "SCORE_7R",
+          new Pose2d(
+                  new Translation2d(14.33, 4.48), new Rotation2d(Units.degreesToRadians(-175.23)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.TOP),
+      new DesiredPosition(
+          "SCORE_8R",
+          new Pose2d(
+                  new Translation2d(13.29, 5.35), new Rotation2d(Units.degreesToRadians(-118.74)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+          "SCORE_9R",
+          new Pose2d(new Translation2d(12.03, 4.90), new Rotation2d(Units.degreesToRadians(-59.71)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.TOP),
+      new DesiredPosition(
+          "SCORE_10R",
+          new Pose2d(new Translation2d(11.79, 3.60), new Rotation2d(Units.degreesToRadians(-1.6)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+          "SCORE_11R",
+          new Pose2d(new Translation2d(12.79, 2.72), new Rotation2d(Units.degreesToRadians(61.21)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.TOP),
+      new DesiredPosition(
+          "SCORE_17R",
+          new Pose2d(new Translation2d(4.25, 2.70), new Rotation2d(Units.degreesToRadians(58.77)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+          "SCORE_18R",
+          new Pose2d(new Translation2d(3.22, 3.60), new Rotation2d(Units.degreesToRadians(-1.6)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.TOP),
+      new DesiredPosition(
+          "SCORE_19R",
+          new Pose2d(new Translation2d(3.47, 4.90), new Rotation2d(Units.degreesToRadians(-59.71)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+          "SCORE_20R",
+          new Pose2d(new Translation2d(4.73, 5.35), new Rotation2d(Units.degreesToRadians(-118.74)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.TOP),
+      new DesiredPosition(
+          "SCORE_21R",
+          new Pose2d(new Translation2d(5.76, 4.48), new Rotation2d(Units.degreesToRadians(-175.23)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.BOTTOM),
+      new DesiredPosition(
+          "SCORE_22R",
+          new Pose2d(new Translation2d(5.52, 3.16), new Rotation2d(Units.degreesToRadians(124.49)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          AlgaeLevel.TOP)
+    };
+
+    public static final DesiredPosition[] LEFT_REEFS = {
+      new DesiredPosition(
+          "SCORE_6L",
+          new Pose2d(new Translation2d(13.76, 3.02), new Rotation2d(Units.degreesToRadians(124.49)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_7L",
+          new Pose2d(
+                  new Translation2d(14.29, 4.15), new Rotation2d(Units.degreesToRadians(-175.23)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_8L",
+          new Pose2d(
+                  new Translation2d(13.58, 5.14), new Rotation2d(Units.degreesToRadians(-118.74)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_9L",
+          new Pose2d(new Translation2d(12.38, 5.05), new Rotation2d(Units.degreesToRadians(-59.71)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_10L",
+          new Pose2d(new Translation2d(11.81, 3.96), new Rotation2d(Units.degreesToRadians(-1.6)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_11L",
+          new Pose2d(new Translation2d(12.50, 2.91), new Rotation2d(Units.degreesToRadians(58.77)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_17L",
+          new Pose2d(new Translation2d(3.93, 2.91), new Rotation2d(Units.degreesToRadians(58.77)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_18L",
+          new Pose2d(new Translation2d(3.24, 3.96), new Rotation2d(Units.degreesToRadians(-1.6)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_19L",
+          new Pose2d(new Translation2d(3.81, 5.05), new Rotation2d(Units.degreesToRadians(-59.71)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_20L",
+          new Pose2d(new Translation2d(5.01, 5.14), new Rotation2d(Units.degreesToRadians(-118.74)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_21L",
+          new Pose2d(new Translation2d(5.72, 4.15), new Rotation2d(Units.degreesToRadians(-175.23)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null),
+      new DesiredPosition(
+          "SCORE_22L",
+          new Pose2d(new Translation2d(5.19, 3.02), new Rotation2d(Units.degreesToRadians(124.49)))
+              .transformBy(FieldOffsetCompensation.REEF),
+          null)
+    };
   }
 
   /** Accelerometer Constants ********************************************** */
@@ -298,20 +504,45 @@ public final class Constants {
     // Camera names, must match names configured on coprocessor
     public static String camera0Name = "camera_0";
     public static String camera1Name = "camera_1";
+    public static String camera2Name = "camera_2";
+    // public static String camera3Name = "camera_3";
+    // public static String camera4Name = "camera_4";
     // ... And more, if needed
 
     // Robot to camera transforms
     // (ONLY USED FOR PHOTONVISION -- Limelight: configure in web UI instead)
-    public static Transform3d robotToCamera0 =
-        new Transform3d(0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, 0.0));
     public static Transform3d robotToCamera1 =
-        new Transform3d(-0.2, 0.0, 0.2, new Rotation3d(0.0, -0.4, Math.PI));
+        new Transform3d(
+            Units.inchesToMeters(10.977),
+            Units.inchesToMeters(15.503),
+            Units.inchesToMeters(10.288),
+            new Rotation3d(0.0, 0.0, -Math.PI / 4));
+    public static Transform3d robotToCamera2 =
+        new Transform3d(
+            Units.inchesToMeters(11.063),
+            Units.inchesToMeters(-9.437),
+            Units.inchesToMeters(10.288),
+            new Rotation3d(0.0, 0.0, Math.PI / 4));
+    public static Transform3d robotToCamera3 =
+        new Transform3d(
+            Units.inchesToMeters(-14.05),
+            Units.inchesToMeters(4.329),
+            Units.inchesToMeters(13.05),
+            new Rotation3d(0, 0.0, -Math.PI / 2));
+    public static Transform3d robotToCamera4 =
+        new Transform3d(
+            Units.inchesToMeters(-12.21),
+            Units.inchesToMeters(8.0),
+            Units.inchesToMeters(18.6),
+            new Rotation3d(0.0, 0.0, Math.PI));
 
     // Standard deviation multipliers for each camera
     // (Adjust to trust some cameras more than others)
     public static double[] cameraStdDevFactors =
         new double[] {
           1.0, // Camera 0
+          1.0,
+          1.0,
           1.0 // Camera 1
         };
   }
@@ -358,19 +589,27 @@ public final class Constants {
     /* SUBSYSTEM CAN DEVICE IDS */
     // This is where mechanism subsystem devices are defined (Including ID, bus, and power port)
     // Example:
-    public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, "", 8);
-    public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, "", 9);
+    // public static final RobotDeviceId FLYWHEEL_LEADER = new RobotDeviceId(3, "", 8);
+    // public static final RobotDeviceId FLYWHEEL_FOLLOWER = new RobotDeviceId(4, "", 9);
+
+    public static final RobotDeviceId INDEXER_MOTOR = new RobotDeviceId(16, "", 17);
+
+    public static final RobotDeviceId ELEVATOR_LEADER = new RobotDeviceId(14, "Default Name", 16);
+    public static final RobotDeviceId ELEVATOR_FOLLOWER = new RobotDeviceId(15, "Default Name", 17);
+
+    public static final RobotDeviceId SQUIDWARD_MOTOR = new RobotDeviceId(23, "", 19);
 
     /* BEAM BREAK and/or LIMIT SWITCH DIO CHANNELS */
     // This is where digital I/O feedback devices are defined
     // Example:
     // public static final int ELEVATOR_BOTTOM_LIMIT = 3;
-
+    public static final int IR_SENSOR = 0;
     /* LINEAR SERVO PWM CHANNELS */
     // This is where PWM-controlled devices (actuators, servos, pneumatics, etc.)
     // are defined
     // Example:
     // public static final int INTAKE_SERVO = 0;
+    public static final int LINEAR_ACTUATOR = 1;
   }
 
   /** AprilTag Field Layout ************************************************ */

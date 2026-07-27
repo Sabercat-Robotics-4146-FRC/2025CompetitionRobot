@@ -44,22 +44,28 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DrivebaseConstants;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.drive.controllers.AutoAlignController;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.RBSIEnum.Mode;
 import frc.robot.util.RBSIParsing;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Drive extends SubsystemBase {
-
+  @AutoLogOutput private boolean autoaligning = false;
+  private AutoAlignController autoAlignController = null;
   static final Lock odometryLock = new ReentrantLock();
   private final GyroIO gyroIO;
   private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
@@ -80,9 +86,12 @@ public class Drive extends SubsystemBase {
   private SwerveDrivePoseEstimator m_PoseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
-  // Constructor
-  public Drive() {
+  RobotContainer rContainer;
+  private Field2d m_field = new Field2d();
 
+  // Constructor
+  public Drive(RobotContainer container) {
+    this.rContainer = container;
     switch (Constants.getSwerveType()) {
       case PHOENIX6:
         // This one is easy because it's all CTRE all the time
@@ -129,6 +138,8 @@ public class Drive extends SubsystemBase {
               throw new RuntimeException("Invalid swerve module combination");
           }
         }
+
+        SmartDashboard.putData("Field", m_field);
 
       default:
         throw new RuntimeException("Invalid Swerve Drive Type");
@@ -197,7 +208,11 @@ public class Drive extends SubsystemBase {
     for (var module : modules) {
       module.periodic();
     }
+
     odometryLock.unlock();
+    if (isAutoAligning()) {
+      runVelocity(autoAlignController.update());
+    }
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
@@ -229,6 +244,8 @@ public class Drive extends SubsystemBase {
         lastModulePositions[moduleIndex] = modulePositions[moduleIndex];
       }
 
+      rContainer.addVelocityData(getChassisSpeeds().toTwist2d(sampleCount));
+
       // Update gyro angle
       if (gyroInputs.connected) {
         // Use the real gyro angle
@@ -245,6 +262,7 @@ public class Drive extends SubsystemBase {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.getMode() != Mode.SIM);
+    m_field.setRobotPose(getPose());
   }
 
   /** Drive Base Action Functions ****************************************** */
@@ -363,6 +381,10 @@ public class Drive extends SubsystemBase {
     return getPose().getRotation();
   }
 
+  public boolean atAutoAlignGoal() {
+    return autoAlignController.atGoal();
+  }
+
   /** Returns an array of module translations. */
   public static Translation2d[] getModuleTranslations() {
     return new Translation2d[] {
@@ -419,6 +441,21 @@ public class Drive extends SubsystemBase {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     m_PoseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  }
+
+  public void setAutoAlignGoal(Supplier<Pose2d> desiredPose, boolean slowMode) {
+    autoaligning = true;
+    autoAlignController =
+        new AutoAlignController(this, desiredPose, () -> new Translation2d(), slowMode, rContainer);
+  }
+
+  public void clearAutoAlignGoal() {
+    autoaligning = false;
+    autoAlignController = null;
+  }
+
+  public boolean isAutoAligning() {
+    return autoaligning;
   }
 
   /** CHOREO SECTION (Ignore if AutoType == PATHPLANNER) ******************* */
